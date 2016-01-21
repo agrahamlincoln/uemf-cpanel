@@ -1,57 +1,53 @@
-[![taylor swift](https://img.shields.io/badge/secured%20by-taylor%20swift-brightgreen.svg)](https://twitter.com/SwiftOnSecurity)
-[![volkswagen status](https://auchenberg.github.io/volkswagen/volkswargen_ci.svg?v=1)](https://github.com/auchenberg/volkswagen) [![GitHub version](https://badge.fury.io/gh/angularclass%2Fangular2-webpack-starter.svg)](http://badge.fury.io/gh/angular-class%2Fangular2-webpack-starter)
-[![Dependency Status](https://david-dm.org/angularclass/angular2-webpack-starter.svg)](https://david-dm.org/angularclass/angular2-webpack-starter)
-[![Issue Stats](http://issuestats.com/github/angularclass/angular2-webpack-starter/badge/pr?style=flat)](http://issuestats.com/github/angularclass/angular2-webpack-starter)
-[![Issue Stats](http://issuestats.com/github/angularclass/angular2-webpack-starter/badge/issue?style=flat)](http://issuestats.com/github/angularclass/angular2-webpack-starter) [![Stack Share](http://img.shields.io/badge/tech-stack-0690fa.svg?style=flat)](http://stackshare.io/angularclass/angular-2-webpack-starter)
+# UEMF Control Panel
 
-<p align="center">
-  <a href="https://angularclass.com" target="_blank">
-    <img src="https://cloud.githubusercontent.com/assets/1016365/9863762/a84fed4a-5af7-11e5-9dde-d5da01e797e7.png" alt="Webpack and Angular 2" width="500" height="320"/>
-  </a>
-</p>
+This project serves as the control panel for the [uemf.org](https://uemf.org) website. The control panel provides specific functionality as follows:
+* Get src links for images and files (for linking and referencing)
+* Upload/Rename/Delete files stored in the User Content directory
+* Edit existing pages with a wysiwyg editor
+* Manage your user account for the control panel and API
 
-# Angular2 Webpack Starter [![Join Slack](https://img.shields.io/badge/slack-join-brightgreen.svg)](https://angularclass.com/slack-join) [![Join the chat at https://gitter.im/angularclass/angular2-webpack-starter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/angularclass/angular2-webpack-starter?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-
-> An Angular 2 starter kit featuring [Angular 2](https://angular.io) ([Router](https://angular.io/docs/js/latest/api/router/), [Forms](https://angular.io/docs/js/latest/api/forms/),
-[Http](https://angular.io/docs/js/latest/api/http/),
-[Services](https://gist.github.com/gdi2290/634101fec1671ee12b3e#_follow_@AngularClass_on_twitter),
-[Tests](https://angular.io/docs/js/latest/api/test/), [E2E](https://angular.github.io/protractor/#/faq#what-s-the-difference-between-karma-and-protractor-when-do-i-use-which-)), [Karma](https://karma-runner.github.io/), [Protractor](https://angular.github.io/protractor/), [Jasmine](https://github.com/jasmine/jasmine), [Istanbul](https://github.com/gotwarlost/istanbul), [TypeScript](http://www.typescriptlang.org/), [Typings](https://github.com/typings/typings), and [Webpack](http://webpack.github.io/) by [AngularClass](https://angularclass.com).
-
-> If you're looking for Angular 1.x please use [NG6-starter](https://github.com/angularclass/NG6-starter)  
-> If you're looking to learn about Webpack and ES6 Build Tools check out [ES6-build-tools](https://github.com/AngularClass/ES6-build-tools)
-
-This seed repo serves as an Angular 2 starter for anyone looking to get up and running with Angular 2 and TypeScript fast. Using a [Webpack](http://webpack.github.io/) for building our files and assisting with boilerplate. We're also using Protractor for our end-to-end story and Karma for our unit tests.
-* Best practices in file and application organization for Angular 2.
-* Ready to go build system using Webpack for working with TypeScript.
-* Angular 2 examples that are ready to go when experimenting with Angular 2.
-* A great Angular 2 seed repo for anyone who wants to start their project.
-* Testing Angular 2 code with Jasmine and Karma.
-* Coverage with Istanbul and Karma
-* End-to-end Angular 2 code using Protractor.
-* Type manager with Typings
-
-### Quick start
-> Clone/Download the repo then edit `app.ts` inside [`/src/app/app.ts`](/src/app/app.ts)
+### Installing
+> clone the project and install dependency packages with npm
 
 ```bash
-# clone our repo
-# --depth 1 removes all but one .git commit history
-git clone --depth 1 https://github.com/angularclass/angular2-webpack-starter.git
+# clone the repo
+# --depth 1 can be omitted - it removes most of the git commit history
+git clone --depth 1 http://uemf-app03/uemf-cpanel.git
 
-# change directory to our repo
-cd angular2-webpack-starter
+# change directory into the repo
+cd uemf-cpanel
 
-# install the repo with npm
+# install dependencies with npm
 npm install
+```
 
-# install TypeScript typings
-./node_modules/.bin/typings install
+### Deployment
+> Build the package and deploy it to a web server
 
-# start the server
+```bash
+# navigate to the directory that includes package.json
+cd uemf-cpanel
+
+# run the build command
+npm run build:prod
+# optionally you may just build the development project for testing
+npm run build
+
+# upload the results which are found in the /dist directory to your web server
+cd dist/
+```
+
+### Development
+> Start the local web server
+
+```bash
 npm start
 ```
-go to [http://localhost:3000](http://localhost:3000) in your browser
+
+This will start a web server on your local host and will re-package the app as you made changes. Webpack will display information such as warnings and errors in your code as it compiles the packages. By default the link will be [localhost:3000](http://localhost:3000) but if you have other processes running on port 3000, then it will increment until it finds a free port.
+
+# Important!
+This package was pulled from [angular2-webpack-starter](https://github.com/AngularClass/angular2-webpack-starter). The most recent version of the starter may be different than this one. The following documentation is taken directly from the README found in the original package. Some of it has been removed because it is no longer relevant to this project.
 
 # Table of Contents
 * [File Structure](#file-structure)
@@ -205,39 +201,3 @@ We have good experience using these editors:
  * See issue [#130](https://github.com/AngularClass/angular2-webpack-starter/issues/130#issuecomment-158872648)
 * How fo I add `vscode-chrome-debug` support?
  * The VS Code chrome debug extension support can be done via `launch.json` see issue [#144](https://github.com/AngularClass/angular2-webpack-starter/issues/144#issuecomment-164063790)
-
-# Support, Questions, or Feedback
-> Contact us anytime for anything about this repo or Angular 2
-
-* [Chat: AngularClass.slack](http://angularclass.com/member-join/)
-* [Twitter: @AngularClass](https://twitter.com/AngularClass)
-* [Gitter: AngularClass/angular2-webpack-starter](https://gitter.im/angularclass/angular2-webpack-starter)
-
-
-# Other Seed/Starter/Example Repos
-* [angular2-webpack-starter (AngularClass)](https://github.com/angularclass/angular2-webpack-starter)
-  * Client/Server, Webpack, TypeScript, TSD, Protractor, Karma, Jasmine
-* [ng2-play (Pawel Kozlowski)](https://github.com/pkozlowski-opensource/ng2-play)
-  * Client only, Minimalist, SystemJS, Gulp, TypeScript
-* [angular2-seed (Minko Gechev)](https://github.com/mgechev/angular2-seed)
-  * Client only, SystemJS, Gulp, TypeScript, TSD, Versioned, Env Dev/Prod
-* [ng2-lab (Roland Groza)](https://github.com/rolandjitsu/ng2-lab)
-  * Client only, ES6, TypeScript, Firebase, Gulp, Ci, TSD, TSLint
-* [ng2-jspm-seed (Rob Wormald)](https://github.com/robwormald/ng2-jspm-seed)
-  * Client only, TypeScript, TSD, Gulp, JSPM, Minimalist
-* [babel-angular2-app (Shuhei Kagawa)](https://github.com/shuhei/babel-angular2-app)
-  * Client only, Minimalist, Babel, ES6+, browserify
-
-___
-
-enjoy — **AngularClass**
-
-<br><br>
-
-[![AngularClass](https://cloud.githubusercontent.com/assets/1016365/9863770/cb0620fc-5af7-11e5-89df-d4b0b2cdfc43.png  "Angular Class")](https://angularclass.com)
-##[AngularClass](https://angularclass.com)
-> Learn AngularJS, Angular 2, and Modern Web Development from the best.
-> Looking for corporate Angular training, want to host us, or Angular consulting? patrick@angularclass.com
-
-# License
- [MIT](/LICENSE)
