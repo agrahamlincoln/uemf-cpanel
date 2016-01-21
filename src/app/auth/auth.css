@@ -1,0 +1,60 @@
+.cp-important {
+  background-color: #BC080B;
+  color: #fff;
+  padding: 0.5em 1em;
+}
+
+.cp-warning {
+  background-color: rgb(251,171,18);
+  color: #fff;
+  padding: 0.5em 1em;
+}
+
+.cp-login {
+  padding: 1em 0.5em;
+}
+.cp-input {
+  display: inline-block;
+  margin: 0 0 1em 0;
+}
+.cp-login label {
+  width: 5em;
+  display: inline-block;
+}
+
+input {
+  height: 1.5em;
+  line-height: 1.5em;
+}
+
+button {
+  padding: 0 0.5em;
+  margin: 0 0.25em;
+  cursor: pointer;
+  color: #000;
+  height: 25px;
+  min-width: 5em;
+  background: rgba(255,255,255,.85);
+  box-shadow: 0 1px 3px rgba(0,0,0,.4);
+  border: 0px;
+}
+button:hover {
+  background-color: rgba(255,255,255,.4);
+}
+
+button.light {
+  background: rgba(255,255,255,.85);
+}
+button.light:hover {
+  background: rgba(0,0,0,.4);
+}
+
+.small {
+  font-size: 0.75em;
+}
+
+a {
+  color: #BC080B;
+  cursor: pointer;
+  text-decoration: underline;
+}

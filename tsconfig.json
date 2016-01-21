@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "noEmitHelpers": false,
+    "sourceMap": true
+  },
+  "files": [
+    "./src/app/app.spec.ts",
+    "./src/app/app.ts",
+    "./src/app/auth/auth.service.ts",
+    "./src/app/auth/auth.ts",
+    "./src/app/auth/user.interface.ts",
+    "./src/app/documentManager/documentManager.ts",
+    "./src/app/home/directives/x-large.spec.ts",
+    "./src/app/home/directives/x-large.ts",
+    "./src/app/home/home.ts",
+    "./src/app/home/providers/title.spec.ts",
+    "./src/app/home/providers/title.ts",
+    "./src/app/shared/api.service.ts",
+    "./src/app/shared/tokenStorage.service.ts",
+    "./src/main.ts",
+    "./src/vendor.ts",
+    "./test/injector.spec.ts",
+    "./test/sanity-test.spec.ts"
+  ],
+  "filesGlob": [
+    "./src/**/*.ts",
+    "./test/**/*.ts",
+    "!./node_modules/**/*.ts"
+  ],
+  "compileOnSave": false,
+  "buildOnSave": false,
+  "atom": {
+    "rewriteTsconfig": true
+  }
+}
