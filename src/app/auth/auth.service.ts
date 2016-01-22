@@ -8,10 +8,9 @@ import 'rxjs/add/operator/share';
 export class AuthService {
   //RXJS Observer for currently logged in status
   public isLoggedIn$: Observable<boolean>;
+  public loginWarning$: Observable<number>;
   private _isLoggedInObserver: any;
   private _isLoggedIn: boolean = false;
-
-  public loginWarning$: Observable<string>;
   private _loginWarningObserver: any;
 
   private _jwt: string = '';
@@ -21,55 +20,30 @@ export class AuthService {
     private _token: TokenStorage
   ) {
     var authService = this;
-    //Initialize isLoggedIn observable
     authService.isLoggedIn$ = new Observable(observer =>
-      //save the observer so we can use it from within this class
-      authService._isLoggedInObserver = observer).share();
-      //Share the observable so it can be accessed by multiple subscribers
+        authService._isLoggedInObserver = observer).share();
+    authService.loginWarning$ = new Observable(observer =>
+      authService._loginWarningObserver = observer).share();
 
-    //Check token storage for a token & validate it
+    //subscribe to tokenStorage JWT
+    authService._token.jwt$.subscribe(updatedToken => {
+      authService._jwt = updatedToken;
+      console.log('JWT has been updated: ' + authService._jwt);
+    });
+    authService.isLoggedIn$.subscribe(isLoggedIn => {
+      if (isLoggedIn) {
+        console.log('User is now logged in, starting timer for token expiration');
+        authService._startTokenExpriationTimer();
+      } //end isLoggedIn
+    });
+  }
+
+  public checkTokenStorage() {
+    var authService = this;
     if (!authService._token.isExpired()) {
-      //Token is in storage and is valid!
       authService._isLoggedIn = true;
       authService._isLoggedInObserver.next(authService._isLoggedIn);
     }
-
-    //subscribe to tokenStorage JWT
-    authService._token.jwt$.subscribe(updatedToken => authService._jwt = updatedToken);
-
-    //subscribe to isLoggedIn observable
-    authService.isLoggedIn$.subscribe(isLoggedIn => {
-      if (isLoggedIn) {
-        //reset the observer in case it's already running
-        authService._loginWarningObserver.complete();
-
-        //Get the duration left on the current token
-        let remainingTime = authService._token.timeLeft();
-
-        //start a timer to monitor the status
-        authService._loginWarningObserver = new Observable(observer => {
-          //complete the observer when token expires
-          let completeId = setTimeout(() => {
-            observer.complete();
-          }, remainingTime); //10 minutes
-
-          //warn the observer 1 minute before end
-          let warnAt = remainingTime-60000;
-          //if time is negative, set it to 0 (no delay)
-          if (warnAt < 0) { warnAt = 0 }
-          let warningId = setTimeout(() => {
-            observer.next('1 Minute Login Warning!');
-          }, warnAt); //1 minute or less before end
-
-          //clean up if cancelled early
-          return () => {
-            console.log('Timer ended');
-            clearInterval(completeId);
-            clearInterval(warningId);
-          }
-        }).share();
-      } //end isLoggedIn
-    });
   }
 
   public login(email: string, password: string) {
@@ -85,16 +59,13 @@ export class AuthService {
       .map(res => res.json())
       .subscribe(
         data => {
+          //Save the JWT
+          authService._token.save(data.message);
+
           //Successfully logged in
           authService._isLoggedIn = true;
           //Update the subscribers
           authService._isLoggedInObserver.next(authService._isLoggedIn);
-
-          //Save the JWT
-          authService._token.save(data.message);
-
-          //Begin Monitoring the JWT Expiration status
-          // TODO ADD THIS PART HERE
         },
         err => {
           //Oh noes, the api call was unsuccessful!
@@ -134,19 +105,52 @@ export class AuthService {
       .subscribe(
         data => {
           console.log('Session Renewed!');
+          //Save the JWT
+          authService._token.save(data.message);
           //Ensure that login status is true
           authService._isLoggedIn = true;
           //Update subscribers
           authService._isLoggedInObserver.next(authService._isLoggedIn);
-
-          //Save the JWT
-          authService._token.save(data.message);
-
           //Begin Monitoring the JWT Expritaion status
           // TODO ADD THIS PART HERE
         }
       );
   }
 
+  private _startTokenExpriationTimer() {
+    var authService = this;
+    var observer = authService._loginWarningObserver;
+    //Get the duration left on the current token
+    let remainingTime = authService._token.timeLeft();
 
+    console.log(remainingTime/1000 + 's left before current Token expires');
+
+    //complete the observer when token expires
+    let completeId = setTimeout(() => {
+      observer.complete();
+    }, remainingTime);
+
+    //warn the observer 1 minute before end
+    let warningId;
+    let warnAt = remainingTime - 60000;
+    console.log('warnAt initialized to: ' + warnAt + 'ms');
+    //if time is negative, set it to 0 (no delay)
+    if (warnAt < 0) {
+      console.log('warnAt is negative, issuing immediate warning for expiration in ' + remainingTime + 'ms');
+      observer.next(remainingTime);
+    } else {
+      console.log('Warning in ' + warnAt/1000 + 's');
+      warningId = setTimeout(() => {
+        remainingTime = authService._token.timeLeft();
+        observer.next(remainingTime);
+      }, warnAt); //1 minute or less before end
+    }
+
+    //clean up if cancelled early
+    return () => {
+      console.log('Timer ended');
+      clearInterval(completeId);
+      clearInterval(warningId);
+    };
+  }
 }

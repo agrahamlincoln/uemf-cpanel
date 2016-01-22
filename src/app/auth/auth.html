@@ -1,4 +1,4 @@
-<div class="cp-important" [hidden]="authService.isloggedIn">You are not logged in. You will not be able to access any part of this site without first logging in</div>
+<div class="cp-important" [hidden]="loggedIn">You are not logged in. You will not be able to access any part of this site without first logging in</div>
 <div class="cp-warning" [hidden]="warning">You will be logged out in {{secondsLeft}} seconds. <button (click)="logout()">Logout now</button><button (click)="sessionRenew()">Stay Logged In</button></div>
 
 <div class="cp-login" [hidden]="loggedIn">

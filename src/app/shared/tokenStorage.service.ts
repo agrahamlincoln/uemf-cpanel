@@ -13,26 +13,15 @@ export class TokenStorage {
 
     //Initialize observable
     tokenStorage.jwt$ = new Observable(observer =>
-      //save the observer so we can use it from within the class
       tokenStorage._jwtObserver = observer).share();
-      //share the observable so it can be accessed by multiple subscribers
-
-    //Get the jwt from localStorage if it exists
-    if (!tokenStorage.isExpired()) {
-      tokenStorage._jwt = localStorage.getItem('jwt');
-      //update subscribers
-      tokenStorage._jwtObserver.next(tokenStorage._jwt);
-    }
   }
 
   public save(jwt: string) {
-    if (jwt) {
-      localStorage.setItem('jwt', jwt);
-      var d = new Date();
-      var jwtExpiration = new Date();
-      jwtExpiration.setMinutes(d.getMinutes() + 10); //10 minute expiration
-      localStorage.setItem('jwt_expire', jwtExpiration + '');
-    }
+    var tokenStorage = this;
+    //save it in local object as well
+    tokenStorage._jwt = jwt;
+    tokenStorage._jwtObserver.next(tokenStorage._jwt);
+    tokenStorage._store();
   } //End saveJwt()
 
   public timeLeft() {
@@ -43,5 +32,15 @@ export class TokenStorage {
   public isExpired() {
     var expireDate = Date.parse(localStorage.getItem('jwt_expire'));
     return expireDate < Date.now();
+  }
+
+  private _store() {
+    var tokenStorage = this;
+
+    var d = new Date();
+    var jwtExpiration = new Date();
+    jwtExpiration.setMinutes(d.getMinutes() + 1); //10 minute expiration
+    localStorage.setItem('jwt', tokenStorage._jwt);
+    localStorage.setItem('jwt_expire', jwtExpiration + '');
   }
 }

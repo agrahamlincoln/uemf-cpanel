@@ -1,4 +1,4 @@
-import {Component} from 'angular2/core';
+import {Component, OnInit} from 'angular2/core';
 import {CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angular2/common';
 import {Observable} from 'rxjs/Observable';
 import {User} from './user.interface';
@@ -13,7 +13,7 @@ import {ApiService} from '../shared/api.service';
   providers: [TokenStorage, AuthService, ApiService]
 })
 
-export class Auth {
+export class Auth implements OnInit {
   public user: User;
 
   //Controls notification visibility
@@ -23,24 +23,24 @@ export class Auth {
   public secondsLeft: number;
 
   constructor(
-    //public service: AuthService,
     public tokenStorage: TokenStorage,
     private _service: AuthService
   ) {
-    //subscribe to authService.isLoggedIn
     var auth = this;
     auth._service.isLoggedIn$.subscribe(updatedLoginStatus => auth.loggedIn = updatedLoginStatus);
-    auth._service.loginWarning$.subscribe(updatedLoginWarning => {
-      console.log('Subscriber received change in loginWarning$!');
+    auth._service.loginWarning$.subscribe(remainingTime => {
+      console.log('Login Warning triggered!');
+      //Warning Retrieved, token will expire soon!
+      auth.warning = !auth.warning;
+      auth.secondsLeft = Math.round(remainingTime / 1000);
+      let countdown = setInterval(() => auth.secondsLeft-- , 1000);
+      setTimeout(() => {
+        //Reset the auth componentS
+        auth.loggedIn = false;
+        auth.warning = true;
+        clearInterval(countdown);
+      }, remainingTime);
     });
-
-    //evaluate if already logged in
-    if (!auth.tokenStorage.isExpired()) {
-      console.log('Token is not expired!');
-      console.log(auth.tokenStorage.timeLeft());
-      //user is logged in with a valid token
-      auth.loggedIn = true;
-    }
 
     auth.user = {
       'id': 0,
@@ -54,6 +54,11 @@ export class Auth {
       'last_login': new Date(),
       'enabled': false
     };
+  }
+
+  ngOnInit() {
+    var auth = this;
+    auth._service.checkTokenStorage();
   }
 
   login() {
@@ -72,51 +77,6 @@ export class Auth {
   sessionRenew() {
     var auth = this;
     auth._service.jwt_renew();
-  }
-
-  monitorLoginStatus(timeRemaining: number = 60000) {
-    var auth = this;
-    let tokenExpireTime = timeRemaining; //seconds
-    let tokenWarningTime = 60; //seconds
-    //Start timer to monitor authomatic JWT Expiration
-    let timer = auth.beginTimer$(tokenExpireTime, tokenWarningTime);
-    timer.subscribe(
-      (val) => {
-        //Warning Retrieved, token will expire soon!
-        auth.warning = !auth.warning;
-        auth.secondsLeft = tokenWarningTime;
-        let countdown = setInterval(() => auth.secondsLeft-- , 1000);
-        setTimeout(() => clearInterval(countdown), tokenWarningTime * 1000);
-      },
-      (err) => {},
-      () => {
-        //Reset notifications to their default value
-        auth.loggedIn = false;
-        auth.warning = true;
-      }
-    );
-  }
-
-  beginTimer$(expiresInSeconds: number, warnBefore: number) {
-    return new Observable(observer => {
-      //set a timeout for completion
-      let completeId = setTimeout(() => {
-        observer.complete();
-      }, expiresInSeconds * 1000);
-
-      //set a warning timeout
-      let warnAt = expiresInSeconds - warnBefore;
-      let warningId = setTimeout(() => {
-        observer.next(expiresInSeconds + ' seconds remaining.');
-      }, warnAt * 1000);
-
-      //clean up if cancelled early
-      return () => {
-        console.log('Timer cancelled');
-        clearInterval(completeId);
-        clearInterval(warningId);
-      };
-    });
   }
 
   showRegister() {
