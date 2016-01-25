@@ -1,6 +1,6 @@
 import {Component, OnInit} from 'angular2/core';
-import {CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angular2/common';
 import {Observable} from 'rxjs/Observable';
+import {CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angular2/common';
 import {User} from './user.interface';
 import {TokenStorage} from '../shared/tokenStorage.service';
 import {AuthService} from './auth.service';
@@ -21,6 +21,8 @@ export class Auth implements OnInit {
   public warning: boolean = true;
   public displayRegister: boolean = false;
   public secondsLeft: number;
+  private _countdown: any;
+  private _timeout: any;
 
   constructor(
     public tokenStorage: TokenStorage,
@@ -30,15 +32,18 @@ export class Auth implements OnInit {
     auth._service.isLoggedIn$.subscribe(updatedLoginStatus => auth.loggedIn = updatedLoginStatus);
     auth._service.loginWarning$.subscribe(remainingTime => {
       console.log('Login Warning triggered!');
+      //Reset the countdown so we don't have multiple running at any point
+      clearInterval(auth._countdown);
+      clearInterval(auth._timeout);
       //Warning Retrieved, token will expire soon!
-      auth.warning = !auth.warning;
+      auth.warning = false;
       auth.secondsLeft = Math.round(remainingTime / 1000);
-      let countdown = setInterval(() => auth.secondsLeft-- , 1000);
-      setTimeout(() => {
+      auth._countdown = setInterval(() => auth.secondsLeft-- , 1000);
+      auth._timeout = setTimeout(() => {
         //Reset the auth componentS
         auth.loggedIn = false;
         auth.warning = true;
-        clearInterval(countdown);
+        clearInterval(auth._countdown);
       }, remainingTime);
     });
 

@@ -2,9 +2,12 @@ import {Injectable} from 'angular2/core';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/share';
 
+// Avoid TS error "cannot find name escape"
+declare var escape: any;
+
 @Injectable()
 export class TokenStorage {
-  public jwt$: Observable<string>;
+  public tokenStream$: Observable<string>;
   private _jwtObserver: any;
   private _jwt = '';
 
@@ -12,35 +15,116 @@ export class TokenStorage {
     var tokenStorage = this;
 
     //Initialize observable
-    tokenStorage.jwt$ = new Observable(observer =>
-      tokenStorage._jwtObserver = observer).share();
+    tokenStorage.tokenStream$ = new Observable(observer => {
+      if (tokenStorage.tokenValid()) {
+        //console.log('token is valid, using what was found in localStorage');
+        tokenStorage._jwt = tokenStorage.getSaved();
+      }
+      tokenStorage._jwtObserver = observer;
+      tokenStorage._jwtObserver.next(tokenStorage._jwt);
+    }).share();
+  }
+
+  public tokenValid(jwt?: string) {
+    var tokenStorage = this;
+    var token: string;
+
+    if (jwt) {
+      token = jwt;
+    } else {
+      token = tokenStorage.getSaved();
+    }
+
+    var parts = token.split('.');
+
+    if (parts.length !== 3) {
+      return false;
+    }
+
+    if (!token || tokenStorage._isTokenExpired(token)) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  public getSaved() {
+    return localStorage.getItem('cpanelJwt');
   }
 
   public save(jwt: string) {
     var tokenStorage = this;
-    //save it in local object as well
+    //save it in local object
     tokenStorage._jwt = jwt;
     tokenStorage._jwtObserver.next(tokenStorage._jwt);
     tokenStorage._store();
   } //End saveJwt()
 
   public timeLeft() {
-    var expireDate = Date.parse(localStorage.getItem('jwt_expire'));
-    return expireDate - Date.now();
+    var tokenStorage = this;
+    //console.log('calculating time left on token: ' + tokenStorage._jwt);
+    var expireDate = this.getTokenExpirationDate(tokenStorage._jwt);
+    if (expireDate === null) { return 0; }
+
+    return expireDate.valueOf() - Date.now().valueOf();
   }
 
-  public isExpired() {
-    var expireDate = Date.parse(localStorage.getItem('jwt_expire'));
-    return expireDate < Date.now();
+  public getTokenExpirationDate(token: string) {
+    var decoded: any;
+    decoded = this._decodeToken(token);
+
+    if (typeof decoded.exp === 'undefined') {
+      return null;
+    }
+
+    var date = new Date(0); // The 0 here is the key, which sets the date to the epoch
+    date.setUTCSeconds(decoded.exp);
+
+    return date;
   }
 
   private _store() {
-    var tokenStorage = this;
+    localStorage.setItem('cpanelJwt', this._jwt);
+  }
 
-    var d = new Date();
-    var jwtExpiration = new Date();
-    jwtExpiration.setMinutes(d.getMinutes() + 1); //10 minute expiration
-    localStorage.setItem('jwt', tokenStorage._jwt);
-    localStorage.setItem('jwt_expire', jwtExpiration + '');
+  private _urlBase64Decode(str: string) {
+    var output = str.replace(/-/g, '+').replace(/_/g, '/');
+    switch (output.length % 4) {
+      case 0: { break; }
+      case 2: { output += '=='; break; }
+      case 3: { output += '='; break; }
+      default: {
+        throw 'Illegal base64url string!';
+      }
+    }
+
+    return decodeURIComponent(escape(window.atob(output)));
+    //polifyll https://github.com/davidchambers/Base64.js
+  }
+
+  private _decodeToken(token: string) {
+    var parts = token.split('.');
+
+    if (parts.length !== 3) {
+      throw new Error('JWT must have 3 parts');
+    }
+
+    var decoded = this._urlBase64Decode(parts[1]);
+    if (!decoded) {
+      throw new Error('Cannot decode the token');
+    }
+
+    return JSON.parse(decoded);
+  }
+
+  private _isTokenExpired(token: string, offsetSeconds?: number) {
+    var date = this.getTokenExpirationDate(token);
+    offsetSeconds = offsetSeconds || 0;
+    if (date === null) {
+      return false;
+    }
+
+    // Token expired?
+    return !(date.valueOf() > (new Date().valueOf() + (offsetSeconds * 1000)));
   }
 }

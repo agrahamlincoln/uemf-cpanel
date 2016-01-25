@@ -1,8 +1,8 @@
 import {Injectable} from 'angular2/core';
 import {Observable} from 'rxjs/Observable';
+import 'rxjs/add/operator/share';
 import {TokenStorage} from '../shared/tokenStorage.service';
 import {ApiService} from '../shared/api.service';
-import 'rxjs/add/operator/share';
 
 @Injectable()
 export class AuthService {
@@ -12,12 +12,14 @@ export class AuthService {
   private _isLoggedInObserver: any;
   private _isLoggedIn: boolean = false;
   private _loginWarningObserver: any;
+  private _loginTimeout: any;
+  private _loginWarning: any;
 
-  private _jwt: string = '';
+  private _jwt: string;
 
   constructor(
-    private _api: ApiService,
-    private _token: TokenStorage
+    private _token: TokenStorage,
+    private _api: ApiService
   ) {
     var authService = this;
     authService.isLoggedIn$ = new Observable(observer =>
@@ -26,13 +28,13 @@ export class AuthService {
       authService._loginWarningObserver = observer).share();
 
     //subscribe to tokenStorage JWT
-    authService._token.jwt$.subscribe(updatedToken => {
+    authService._token.tokenStream$.subscribe(updatedToken => {
       authService._jwt = updatedToken;
-      console.log('JWT has been updated: ' + authService._jwt);
+      //console.log('JWT has been updated: ' + authService._jwt);
     });
     authService.isLoggedIn$.subscribe(isLoggedIn => {
       if (isLoggedIn) {
-        console.log('User is now logged in, starting timer for token expiration');
+        console.log('authService.isLoggedIn$ reported "true", starting timer');
         authService._startTokenExpriationTimer();
       } //end isLoggedIn
     });
@@ -40,9 +42,18 @@ export class AuthService {
 
   public checkTokenStorage() {
     var authService = this;
-    if (!authService._token.isExpired()) {
-      authService._isLoggedIn = true;
+    var token = authService._jwt;
+    //console.log('Token: "' + token + '"');
+    if (!token) {
+      authService._isLoggedIn = false;
       authService._isLoggedInObserver.next(authService._isLoggedIn);
+    } else {
+      //console.log('Got jwt: ' + token);
+      //console.log('Jwt expire time: ' + authService._token.getTokenExpirationDate(token));
+      if (authService._token.tokenValid()) {
+        authService._isLoggedIn = true;
+        authService._isLoggedInObserver.next(authService._isLoggedIn);
+      }
     }
   }
 
@@ -92,7 +103,7 @@ export class AuthService {
           console.log(data);
         },
         err => console.error(err),
-        () => console.log('Registration Complete')
+        () => console.log('API Call Complete: Register')
       );
 
   }
@@ -108,10 +119,17 @@ export class AuthService {
           //Save the JWT
           authService._token.save(data.message);
           //Ensure that login status is true
-          authService._isLoggedIn = true;
-          //Update subscribers
-          authService._isLoggedInObserver.next(authService._isLoggedIn);
+          if (!authService._isLoggedIn) {
+            //Update subscribers
+            authService._isLoggedIn = true;
+            authService._isLoggedInObserver.next(authService._isLoggedIn);
+          }
+
           //Begin Monitoring the JWT Expritaion status
+          //reset login timers
+          clearInterval(authService._loginTimeout);
+          clearInterval(authService._loginWarning);
+          authService._startTokenExpriationTimer();
           // TODO ADD THIS PART HERE
         }
       );
@@ -123,34 +141,34 @@ export class AuthService {
     //Get the duration left on the current token
     let remainingTime = authService._token.timeLeft();
 
-    console.log(remainingTime/1000 + 's left before current Token expires');
-
-    //complete the observer when token expires
-    let completeId = setTimeout(() => {
-      observer.complete();
-    }, remainingTime);
-
     //warn the observer 1 minute before end
-    let warningId;
     let warnAt = remainingTime - 60000;
-    console.log('warnAt initialized to: ' + warnAt + 'ms');
+    //console.log('warnAt initialized to: ' + warnAt + 'ms');
     //if time is negative, set it to 0 (no delay)
     if (warnAt < 0) {
       console.log('warnAt is negative, issuing immediate warning for expiration in ' + remainingTime + 'ms');
       observer.next(remainingTime);
     } else {
-      console.log('Warning in ' + warnAt/1000 + 's');
-      warningId = setTimeout(() => {
-        remainingTime = authService._token.timeLeft();
-        observer.next(remainingTime);
+      console.log('Warning in ' + warnAt / 1000 + 's');
+      authService._loginWarning = setTimeout(() => {
+        observer.next(authService._token.timeLeft());
       }, warnAt); //1 minute or less before end
     }
+
+    //console.log(remainingTime / 1000 + 's left before current Token expires');
+    //complete the observer when token expires
+    authService._loginTimeout = setTimeout(() => {
+      //console.log('Observer complete, clearing timers.');
+      //observer.complete();
+      clearInterval(authService._loginTimeout);
+      clearInterval(authService._loginWarning);
+    }, remainingTime);
 
     //clean up if cancelled early
     return () => {
       console.log('Timer ended');
-      clearInterval(completeId);
-      clearInterval(warningId);
+      clearInterval(authService._loginTimeout);
+      clearInterval(authService._loginWarning);
     };
   }
 }
