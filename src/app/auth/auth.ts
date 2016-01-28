@@ -6,11 +6,24 @@ import {TokenStorage} from '../shared/tokenStorage.service';
 import {AuthService} from './auth.service';
 import {ApiService} from '../shared/api.service';
 
+const DEFAULT_USER = {
+  'id': 0,
+  'email': '',
+  'first_name': '',
+  'last_name': '',
+  'register_date': new Date(),
+  'password': '',
+  'token': '',
+  'token_issue_date': new Date(),
+  'last_login': new Date(),
+  'enabled': false
+};
+
 @Component({
   selector: 'auth', // <auth></auth>
   styles: [ require('./auth.css') ],
   template: require('./auth.html'),
-  providers: [TokenStorage, AuthService, ApiService]
+  providers: []
 })
 
 export class Auth implements OnInit {
@@ -47,18 +60,7 @@ export class Auth implements OnInit {
       }, remainingTime);
     });
 
-    auth.user = {
-      'id': 0,
-      'email': '',
-      'first_name': '',
-      'last_name': '',
-      'register_date': new Date(),
-      'password': '',
-      'token': '',
-      'token_issue_date': new Date(),
-      'last_login': new Date(),
-      'enabled': false
-    };
+    auth.user = DEFAULT_USER;
   }
 
   ngOnInit() {
@@ -82,6 +84,11 @@ export class Auth implements OnInit {
   sessionRenew() {
     var auth = this;
     auth._service.jwt_renew();
+
+    //Reset the warning pane
+    auth.warning = true;
+    clearInterval(auth._countdown);
+    clearTimeout(auth._timeout);
   }
 
   showRegister() {

@@ -1,5 +1,6 @@
 import {Injectable} from 'angular2/core';
 import {Http, Headers} from 'angular2/http';
+import {TokenStorage} from './tokenStorage.service';
 
 @Injectable()
 export class ApiService {
@@ -35,5 +36,14 @@ export class ApiService {
       'authorization': 'Bearer ' + token
     });
     return api.http.get('http://localhost:3001/api/v1/auth/jwt_renew', {headers: headers});
+  }
+
+  files() {
+    var api = this;
+    var token = localStorage.getItem('cpanelJwt') || null;
+    var headers = new Headers({
+      'authorization': 'Bearer ' + token
+    });
+    return api.http.get('http://localhost:3001/api/v1/files/documents', {headers: headers});
   }
 }

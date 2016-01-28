@@ -41,7 +41,7 @@ export class TokenStorage {
       return false;
     }
 
-    if (!token || tokenStorage._isTokenExpired(token)) {
+    if (!token || tokenStorage.isTokenExpired(token)) {
       return false;
     } else {
       return true;
@@ -83,6 +83,17 @@ export class TokenStorage {
     return date;
   }
 
+  public isTokenExpired(token: string, offsetSeconds?: number) {
+    var date = this.getTokenExpirationDate(token);
+    offsetSeconds = offsetSeconds || 0;
+    if (date === null) {
+      return false;
+    }
+
+    // Token expired?
+    return !(date.valueOf() > (new Date().valueOf() + (offsetSeconds * 1000)));
+  }
+
   private _store() {
     localStorage.setItem('cpanelJwt', this._jwt);
   }
@@ -116,15 +127,26 @@ export class TokenStorage {
 
     return JSON.parse(decoded);
   }
+}
 
-  private _isTokenExpired(token: string, offsetSeconds?: number) {
-    var date = this.getTokenExpirationDate(token);
-    offsetSeconds = offsetSeconds || 0;
-    if (date === null) {
-      return false;
-    }
+/**
+ * Verifies token from storage or optionally passed.
+ * This method is separated for use with @CanActivate router decorator and NgIf directive
+ */
+export function isTokenExpired(storageTokenName?: string, jwt?: string) {
+  var tokenName: string = storageTokenName || 'cpanelJwt';
+  var token: string;
 
-    // Token expired?
-    return !(date.valueOf() > (new Date().valueOf() + (offsetSeconds * 1000)));
+  if (jwt) {
+    token = jwt;
+  } else {
+    token = localStorage.getItem(tokenName);
+  }
+
+  var tokenStorage = new TokenStorage();
+  if (!token || tokenStorage.isTokenExpired(token)) {
+    return false;
+  } else {
+    return true;
   }
 }

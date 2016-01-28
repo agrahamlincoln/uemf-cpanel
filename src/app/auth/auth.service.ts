@@ -34,7 +34,7 @@ export class AuthService {
     });
     authService.isLoggedIn$.subscribe(isLoggedIn => {
       if (isLoggedIn) {
-        console.log('authService.isLoggedIn$ reported "true", starting timer');
+        //console.log('authService.isLoggedIn$ reported "true", starting timer');
         authService._startTokenExpriationTimer();
       } //end isLoggedIn
     });
@@ -75,7 +75,6 @@ export class AuthService {
 
           //Successfully logged in
           authService._isLoggedIn = true;
-          //Update the subscribers
           authService._isLoggedInObserver.next(authService._isLoggedIn);
         },
         err => {
@@ -116,6 +115,7 @@ export class AuthService {
       .subscribe(
         data => {
           console.log('Session Renewed!');
+
           //Save the JWT
           authService._token.save(data.message);
           //Ensure that login status is true
@@ -127,7 +127,8 @@ export class AuthService {
 
           //Begin Monitoring the JWT Expritaion status
           //reset login timers
-          clearInterval(authService._loginTimeout);
+          console.log('Reset login timers');
+          clearTimeout(authService._loginTimeout);
           clearInterval(authService._loginWarning);
           authService._startTokenExpriationTimer();
           // TODO ADD THIS PART HERE
@@ -151,7 +152,8 @@ export class AuthService {
     } else {
       console.log('Warning in ' + warnAt / 1000 + 's');
       authService._loginWarning = setTimeout(() => {
-        observer.next(authService._token.timeLeft());
+        //Retrieve the timeremaining from token again
+        observer.next(remainingTime - warnAt);
       }, warnAt); //1 minute or less before end
     }
 
@@ -160,14 +162,18 @@ export class AuthService {
     authService._loginTimeout = setTimeout(() => {
       //console.log('Observer complete, clearing timers.');
       //observer.complete();
-      clearInterval(authService._loginTimeout);
+      clearTimeout(authService._loginTimeout);
       clearInterval(authService._loginWarning);
+
+      //Logout the user
+      authService._isLoggedIn = false;
+      authService._isLoggedInObserver.next(authService._isLoggedIn);
     }, remainingTime);
 
     //clean up if cancelled early
     return () => {
       console.log('Timer ended');
-      clearInterval(authService._loginTimeout);
+      clearTimeout(authService._loginTimeout);
       clearInterval(authService._loginWarning);
     };
   }

@@ -36,6 +36,18 @@ nav ul {
   margin: 0 0 0 0;
 }
 
+nav ul button {
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+}
+nav ul button:disabled li:hover {
+  color: #fff;
+  background: linear-gradient(#656565, #3d3d3d);
+}
+
 nav ul li {
   margin: 0 7px 0 0;
   padding: 4px 15px;

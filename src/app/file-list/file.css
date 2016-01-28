@@ -1,0 +1,50 @@
+.title {
+  font-weight: bold;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 60%;
+  white-space: nowrap;
+}
+
+.details {
+  transition: all 0.25s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+button {
+  padding: 0 0.5em;
+  margin: 0 0.5em;
+  font-size: 1.1em;
+  cursor: pointer;
+  color: #000;
+  height: 1.5em;
+  line-height: 1.5em;
+  min-width: 5em;
+  background: rgba(255,255,255,.85);
+  box-shadow: 0 1px 3px rgba(0,0,0,.4);
+  border: 0px;
+}
+button:hover {
+  background-color: rgb(251,171,18);
+}
+button.critical:hover {
+  color: rgba(255,255,255,.8);
+  background-color: rgb(188, 8, 11);
+}
+
+span.filesize {
+  width: 7em;
+  display: inline-block;
+}
+
+span.modified {
+  padding-left: 1em;
+}
+
+div.actions {
+  display: block;
+  margin: 0.5em 1em 0.5em 0;
+}
