@@ -1,16 +1,18 @@
-/*
- * Angular 2 decorators and services
- */
-import {Component} from 'angular2/core';
+//angular2 imports
+import {Component, ViewEncapsulation} from 'angular2/core';
 import {Location, RouteConfig, Router, ROUTER_DIRECTIVES} from 'angular2/router';
 import {FORM_PROVIDERS} from 'angular2/common';
-import {Home} from './home/home';
-import {DocumentManager} from './documentManager/documentManager';
 
-import {Auth} from './auth/auth';
-import {AuthService} from './auth/auth.service';
-import {TokenStorage} from './shared/tokenStorage.service';
-import {ApiService} from './shared/api.service';
+//project imports
+import { HomeComponent } from './home/home.component';
+import { DocumentManager } from './documentManager/documentManager';
+
+import { AuthComponent } from './auth/auth.component';
+import { AuthService } from './auth/auth.service';
+import { TokenStorage } from './shared/tokenStorage.service';
+import { ApiService } from './shared/api.service';
+
+import { EditorComponent } from './editor/editor.component';
 
 /*
  * App Component
@@ -19,7 +21,7 @@ import {ApiService} from './shared/api.service';
 @Component({
   selector: 'app',
   providers: [ ...FORM_PROVIDERS, AuthService, TokenStorage, ApiService],
-  directives: [ ...ROUTER_DIRECTIVES, Auth],
+  directives: [ ...ROUTER_DIRECTIVES, AuthComponent],
   pipes: [],
   styles: [ require('./app.css') ],
   template: `
@@ -33,7 +35,7 @@ import {ApiService} from './shared/api.service';
       <ul id="nav">
       <button href="/"><li>&larr;</li></button>
       <button [routerLink]=" ['Index'] "><li>Index</li></button>
-      <button [disabled]="!isLoggedIn" [routerLink]=" ['DocumentManagement'] ">
+      <button [disabled]="!isLoggedIn" [routerLink]=" ['DocumentManagement', {type: 'pages'}] ">
         <li>Document Management</li>
       </button>
       <button [disabled]="!isLoggedIn" [routerLink]=" ['Users'] ">
@@ -46,12 +48,15 @@ import {ApiService} from './shared/api.service';
       <router-outlet></router-outlet>
     </main>
   </div>
-  `
+  `,
+  encapsulation: ViewEncapsulation.None //Makes all styles in this global
 })
 @RouteConfig([
-  { path: '/',          component: Home,            name: 'Index' },
-  { path: '/documents', component: DocumentManager, name: 'DocumentManagement' },
-  { path: '/users',     component: Home,            name: 'Users' }
+  { path: '/',                component: HomeComponent,            name: 'Index' },
+  { path: '/documents/:type', component: DocumentManager,          name: 'DocumentManagement' },
+  { path: '/editor/:name',    component: EditorComponent,          name: 'Editor' },
+  { path: '/editor',          component: EditorComponent,          name: 'EditorSelect' },
+  { path: '/users',           component: HomeComponent,            name: 'Users' }
 ])
 export class App {
   public isLoggedIn = false;

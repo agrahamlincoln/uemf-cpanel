@@ -1,7 +1,10 @@
+//angular2 imports
 import {Component} from 'angular2/core';
 import {CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angular2/common';
 import {Http} from 'angular2/http';
-import {Auth} from '../auth/auth';
+
+//project imports
+import { AuthComponent } from '../auth/auth.component';
 
 @Component({
   // The selector is what angular internally uses
@@ -10,13 +13,13 @@ import {Auth} from '../auth/auth';
   selector: 'home',  // <home></home>
   // We need to tell Angular's compiler which custom pipes are in our template.
   pipes: [ ],
-  directives: [ CORE_DIRECTIVES, FORM_DIRECTIVES, Auth ],
+  directives: [ CORE_DIRECTIVES, FORM_DIRECTIVES, AuthComponent ],
   // Our list of styles in our component. We may add more to compose many styles together
   styles: [ require('./home.css') ],
   // Every Angular template is first compiled by the browser before Angular runs it's compiler
   template: require('./home.html')
 })
-export class Home {
+export class HomeComponent {
   constructor(public http: Http) {
 
   }

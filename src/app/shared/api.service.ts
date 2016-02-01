@@ -2,11 +2,22 @@ import {Injectable} from 'angular2/core';
 import {Http, Headers} from 'angular2/http';
 import {TokenStorage} from './tokenStorage.service';
 
+const API_BASE = 'http://localhost:3001/api/v1/';
+
 @Injectable()
 export class ApiService {
   constructor(
     public http: Http
   ) {}
+
+  get(url: string) {
+    var api = this;
+    var token = localStorage.getItem('cpanelJwt') || null;
+    var headers = new Headers({
+      'authorization': 'Bearer ' + token
+    });
+    return api.http.get('http://localhost:3001/' + url, {headers: headers});
+  }
 
   login(credentials: { email: string, password: string }) {
     var api = this;
@@ -14,18 +25,25 @@ export class ApiService {
     var headers = new Headers({
       'Content-Type': 'application/json'
     });
-    return api.http.post('http://localhost:3001/api/v1/auth/login', JSON.stringify(credentials), {
+    return api.http.post(API_BASE + 'auth/login', JSON.stringify(credentials), {
       headers: headers
     });
   }
 
-  register(credentials: { email: string, password: string, first_name: string, last_name: string }) {
+  register(
+    credentials: {
+      email: string,
+      password: string,
+      first_name: string,
+      last_name: string
+    }
+  ) {
     var api = this;
 
     var headers = new Headers({
       'Content-Type': 'application/json'
     });
-    return api.http.post('http://localhost:3001/api/v1/auth/register', JSON.stringify(credentials), {
+    return api.http.post(API_BASE + 'auth/register', JSON.stringify(credentials), {
       headers: headers
     });
   }
@@ -35,15 +53,29 @@ export class ApiService {
     var headers = new Headers({
       'authorization': 'Bearer ' + token
     });
-    return api.http.get('http://localhost:3001/api/v1/auth/jwt_renew', {headers: headers});
+    return api.http.get(API_BASE + 'auth/jwt_renew', {headers: headers});
   }
 
-  files() {
+  files(type: string) {
     var api = this;
     var token = localStorage.getItem('cpanelJwt') || null;
     var headers = new Headers({
       'authorization': 'Bearer ' + token
     });
-    return api.http.get('http://localhost:3001/api/v1/files/documents', {headers: headers});
+    return api.http.get(API_BASE + 'files/' + type, {headers: headers});
   }
+
+  update(path: string, content: string) {
+    var api = this;
+    var token = localStorage.getItem('cpanelJwt') || null;
+    var headers = new Headers({
+      'authorization': 'Bearer ' + token
+    });
+    var data = {
+      'path': path,
+      'content': content
+    };
+    return api.http.put(API_BASE + 'files', JSON.stringify(data), {headers: headers});
+  }
+
 }

@@ -1,18 +1,17 @@
+//angular2 imports
 import {Component} from 'angular2/core';
-import {TinyEditor} from '../shared/tiny-editor';
-import {FileList} from '../file-list/file-list';
-
-//For the protected route
-import {isTokenExpired} from '../shared/tokenStorage.service';
 import {CanActivate} from 'angular2/router';
+
+//project imports
+import {FileListComponent} from '../file-list/fileList.component';
+import {isTokenExpired} from '../shared/tokenStorage.service';
 
 @Component ({
   selector: 'document-management',
-  directives: [TinyEditor, FileList],
+  directives: [FileListComponent],
   template: `
   <h1>Document Manager</h1>
   <file-list></file-list>
-  <tiny-editor></tiny-editor>
   `,
   styles: []
 })

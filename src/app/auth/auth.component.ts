@@ -1,6 +1,9 @@
+//angular2 imports
 import {Component, OnInit} from 'angular2/core';
 import {Observable} from 'rxjs/Observable';
 import {CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angular2/common';
+
+//project imports
 import {User} from './user.interface';
 import {TokenStorage} from '../shared/tokenStorage.service';
 import {AuthService} from './auth.service';
@@ -26,7 +29,7 @@ const DEFAULT_USER = {
   providers: []
 })
 
-export class Auth implements OnInit {
+export class AuthComponent implements OnInit {
   public user: User;
 
   //Controls notification visibility

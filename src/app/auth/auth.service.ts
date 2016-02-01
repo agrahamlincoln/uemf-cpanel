@@ -1,6 +1,9 @@
+//angular2 imports
 import {Injectable} from 'angular2/core';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/share';
+
+//project imports
 import {TokenStorage} from '../shared/tokenStorage.service';
 import {ApiService} from '../shared/api.service';
 
@@ -86,7 +89,12 @@ export class AuthService {
       );
   }
 
-  public register(email: string, password: string, first_name: string = '', last_name: string = '') {
+  public register(
+    email: string,
+    password: string,
+    first_name: string = '',
+    last_name: string = ''
+  ) {
     var authService = this;
     let credentials = {
       'email': email,
@@ -147,7 +155,9 @@ export class AuthService {
     //console.log('warnAt initialized to: ' + warnAt + 'ms');
     //if time is negative, set it to 0 (no delay)
     if (warnAt < 0) {
-      console.log('warnAt is negative, issuing immediate warning for expiration in ' + remainingTime + 'ms');
+      console.log(
+        'warnAt is negative, issuing immediate warning for expiration in ' + remainingTime + 'ms'
+      );
       observer.next(remainingTime);
     } else {
       console.log('Warning in ' + warnAt / 1000 + 's');

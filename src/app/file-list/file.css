@@ -8,6 +8,7 @@
 }
 
 .details {
+  margin-top: 0.5em;
   transition: all 0.25s;
   white-space: nowrap;
   overflow: hidden;
@@ -33,6 +34,22 @@ button:hover {
 button.critical:hover {
   color: rgba(255,255,255,.8);
   background-color: rgb(188, 8, 11);
+}
+
+input {
+  height: 1.5em;
+  width: 20em;
+  padding: 0.1em 1em 0.1em 1em;
+  font-size: 16px;
+}
+
+.input-group {
+  margin: 0.5em 0 1em 0;
+}
+.input-group label {
+  margin-right: 1em;
+  line-height: 1.5em;
+  font-size: 16px;
 }
 
 span.filesize {
