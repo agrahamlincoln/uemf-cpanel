@@ -18,7 +18,7 @@ import {SpinnerComponent} from '../../shared/spinner.component';
     <button [routerLink]="['FileManager', {type: 'pages'}]">Pages</button>
     <button [routerLink]="['FileManager', {type: 'all'}]">All</button>
   </div>
-  <spinner *ngIf="!loading"></spinner>
+  <spinner *ngIf="loading"></spinner>
   <file
     *ngFor="#file of files"
     (click)="selectFile(file)"
