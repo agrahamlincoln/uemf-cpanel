@@ -78,4 +78,27 @@ export class ApiService {
     return api.http.put(API_BASE + 'files', JSON.stringify(data), {headers: headers});
   }
 
+  rename(path: string, newname: string) {
+    var api = this;
+    var token = localStorage.getItem('cpanelJwt') || null;
+    var headers = new Headers({
+      'authorization': 'Bearer ' + token
+    });
+    var data = {
+      'path': path,
+      'name': newname
+    };
+    return api.http.put(API_BASE + 'files/rename', JSON.stringify(data), {headers: headers});
+  }
+
+  delete(path: string) {
+    var api = this;
+    var token = localStorage.getItem('cpanelJwt') || null;
+    var headers = new Headers({
+      'authorization': 'Bearer ' + token
+    });
+    var data = { 'path': path };
+    return api.http.post(API_BASE + 'files/delete', JSON.stringify(data), {headers: headers});
+  }
+
 }

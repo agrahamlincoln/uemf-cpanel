@@ -2,18 +2,31 @@
 import { Component, Input, OnInit } from 'angular2/core';
 
 //project imports
-import {ApiService} from '../shared/api.service.ts';
+import {ApiService} from '../shared/api.service';
+import {SpinnerComponent} from '../shared/spinner.component';
 declare var tinymce: any;
 
 @Component({
   selector: 'wysiwyg',
   template: `
+    <spinner *ngIf="loading"></spinner>
     <div id="editor-content" class='tinymce' [innerHTML]="content"></div>
     <button (click)="save()">Save Changes</button>`,
-  styles: [``]
+  styles: [`
+    #editor-content {
+      animation: fadein 0.5s ease-in;
+    }
+
+    @keyframes fadein {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+  `],
+  directives: [SpinnerComponent]
 })
 export class Wysiwyg {
   public content: string;
+  public loading: boolean = false;
 
   constructor(
     private _api: ApiService
@@ -22,6 +35,7 @@ export class Wysiwyg {
 
   ngOnInit() {
     var w = this;
+    w.loading = true;
     let source = w._api.get('content/pages/' + w.filename);
     source
       .map(res => res.text())
@@ -38,7 +52,10 @@ export class Wysiwyg {
           });
         },
         err => (console.error(err)),
-        () => console.log('API Call Complete: get ' + w.filename)
+        () => {
+          console.log('API Call Complete: get ' + w.filename)
+          w.loading = false;
+        }
       );
   }
 

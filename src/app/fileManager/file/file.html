@@ -8,8 +8,8 @@
   <span class="filesize">Size: {{file.size | filesize}}</span>
   <span class="modified">Last Modified: {{file.modified_date | date:'medium'}}</span>
   <div class="actions">
-    <button *ngIf="fileType(file) === 'html'" [routerLink]="['Editor', {name: file.name}]">Edit</button>
+    <button *ngIf="fileType(file) === 'html'" [routerLink]="['PageEditor', {name: file.name}]">Edit</button>
     <button *ngIf="fileType(file) !== 'html'" (click)="edit(file)">Rename</button>
-    <button *ngIf="fileType(file) !== 'html'" class="critical">Delete</button>
+    <button *ngIf="fileType(file) !== 'html'" (click)="delete(file)" class="critical">Delete</button>
   </div>
 </div>

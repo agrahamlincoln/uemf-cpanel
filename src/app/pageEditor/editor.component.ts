@@ -12,15 +12,23 @@ import { Wysiwyg } from './wysiwyg.component';
   This is going to be a wysiwyg editor
   <div *ngIf="!selected">
     Select a Document to edit.
-    <button [routerLink]="['Editor', {name: 'home.html'}]">Home</button>
-    <button [routerLink]="['Editor', {name: 'about.html'}]">About</button>
-    <button [routerLink]="['Editor', {name: 'resources.html'}]">Resources</button>
-    <button [routerLink]="['Editor', {name: 'education.html'}]">Education</button>
-    <button [routerLink]="['Editor', {name: 'careers.html'}]">Careers</button>
-    <button [routerLink]="['Editor', {name: 'contact.html'}]">Contact</button>
+    <button [routerLink]="['PageEditor', {name: 'home.html'}]">Home</button>
+    <button [routerLink]="['PageEditor', {name: 'about.html'}]">About</button>
+    <button [routerLink]="['PageEditor', {name: 'resources.html'}]">Resources</button>
+    <button [routerLink]="['PageEditor', {name: 'education.html'}]">Education</button>
+    <button [routerLink]="['PageEditor', {name: 'careers.html'}]">Careers</button>
+    <button [routerLink]="['PageEditor', {name: 'contact.html'}]">Contact</button>
   </div>
-  <wysiwyg [filename]="pageName"></wysiwyg>
+  <wysiwyg
+    [filename]="pageName"
+    *ngIf="pageName !== 'Select Page'"
+  ></wysiwyg>
   `,
+  styles: [`
+    wysiwyg {
+
+    }
+  `],
   directives: [RouterLink, Wysiwyg]
 })
 export class EditorComponent {
@@ -36,7 +44,6 @@ export class EditorComponent {
       editor.selected = true;
     } else {
       editor.pageName = 'Select Page';
-
     }
   }
 }

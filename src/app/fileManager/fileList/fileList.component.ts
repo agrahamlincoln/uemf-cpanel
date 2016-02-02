@@ -4,22 +4,27 @@ import {NgClass} from 'angular2/common';
 import {RouteParams, RouterLink} from 'angular2/router';
 
 //Project Imports
-import {File} from './file.interface';
-import {FileComponent} from './file.component';
-import {ApiService} from '../shared/api.service';
+import {File} from '../file/file.interface';
+import {FileComponent} from '../file/file.component';
+import {ApiService} from '../../shared/api.service';
+import {SpinnerComponent} from '../../shared/spinner.component';
 
 @Component({
   selector: 'file-list',
   template: `
   <div id="filter">
-    <button [routerLink]="['DocumentManagement', {type: 'documents'}]">Documents</button>
-    <button [routerLink]="['DocumentManagement', {type: 'images'}]">Images</button>
-    <button [routerLink]="['DocumentManagement', {type: 'pages'}]">Pages</button>
-    <button [routerLink]="['DocumentManagement', {type: 'all'}]">All</button>
+    <button [routerLink]="['FileManager', {type: 'documents'}]">Documents</button>
+    <button [routerLink]="['FileManager', {type: 'images'}]">Images</button>
+    <button [routerLink]="['FileManager', {type: 'pages'}]">Pages</button>
+    <button [routerLink]="['FileManager', {type: 'all'}]">All</button>
   </div>
-  <div *ngFor="#file of files">
-    <file (click)="selectFile(file)" [ngClass]="{active: file.active}" [data]="file"></file>
-  </div>
+  <spinner *ngIf="!loading"></spinner>
+  <file
+    *ngFor="#file of files"
+    (click)="selectFile(file)"
+    [ngClass]="{active: file.active}"
+    [data]="file"
+  ></file>
   `,
   styles: [`
     file {
@@ -29,7 +34,13 @@ import {ApiService} from '../shared/api.service';
       box-shadow: 0 1px 0.5px rgba(0,0,0,.4);
       border-bottom: 1px solid rgba(255,255,255,.4);
       transition: all 0.25s;
+      animation: fadein 0.5s ease-in;
       padding: 0.5em 1em 0.5em 1em;
+    }
+
+    @keyframes fadein {
+      from { opacity: 0; }
+      to   { opacity: 1; }
     }
 
     .active {
@@ -56,11 +67,12 @@ import {ApiService} from '../shared/api.service';
       box-shadow: 0 1px 3px rgba(0,0,0,.4);
     }
   `],
-  directives: [FileComponent, NgClass, RouterLink]
+  directives: [FileComponent, NgClass, RouterLink, SpinnerComponent]
 })
 
 export class FileListComponent {
   public files: Array<File>;
+  public loading: boolean;
 
   constructor(
     private _api: ApiService,
@@ -69,6 +81,7 @@ export class FileListComponent {
 
   ngOnInit() {
     var fileList = this;
+    fileList.loading = true;
     var list = fileList._api.files(fileList.params.get('type'));
     list
       .map(res => res.json())
@@ -87,7 +100,10 @@ export class FileListComponent {
         err => {
           console.error(err);
         },
-        () => console.log('API Call Complete: Files')
+        () => {
+          console.log('API Call Complete: Files');
+          fileList.loading = false;
+        }
       );
   }
 

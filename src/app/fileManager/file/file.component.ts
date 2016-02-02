@@ -4,9 +4,10 @@ import {DatePipe} from 'angular2/common';
 import {RouterLink} from 'angular2/router';
 
 //Project Imports
-import {FilesizePipe} from './filesize.pipe';
+import {FilesizePipe} from '../filesize.pipe';
 import {FileEditor} from './fileEditor.component';
 import {File} from './file.interface';
+import {ApiService} from '../../shared/api.service';
 
 @Component({
   selector: 'file',
@@ -17,7 +18,9 @@ import {File} from './file.interface';
 })
 
 export class FileComponent {
-  constructor() { }
+  constructor(
+    private _api: ApiService
+  ) { }
   @Input('data') file: any;
 
   edit(file: File) {
@@ -25,6 +28,22 @@ export class FileComponent {
 
     }
     file.editing = true;
+  }
+
+  delete(file: File) {
+    var fileComp = this;
+    let deleteFile = fileComp._api.delete(file.path);
+    deleteFile
+      .map(res => res.json())
+      .subscribe(
+        data => {
+          console.log(data);
+
+        },
+        err => console.error(err),
+        () => console.log('API Call Complete: delete')
+      );
+
   }
 
   fileType(file: File) {

@@ -3,11 +3,11 @@ import {Component} from 'angular2/core';
 import {CanActivate} from 'angular2/router';
 
 //project imports
-import {FileListComponent} from '../file-list/fileList.component';
+import {FileListComponent} from './fileList/fileList.component';
 import {isTokenExpired} from '../shared/tokenStorage.service';
 
 @Component ({
-  selector: 'document-management',
+  selector: 'file-manager',
   directives: [FileListComponent],
   template: `
   <h1>Document Manager</h1>
@@ -19,6 +19,6 @@ import {isTokenExpired} from '../shared/tokenStorage.service';
 //Protected route, user must be logged in
 @CanActivate(() => isTokenExpired())
 
-export class DocumentManager {
+export class FileManager {
 
 }

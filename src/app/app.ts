@@ -5,14 +5,14 @@ import {FORM_PROVIDERS} from 'angular2/common';
 
 //project imports
 import { HomeComponent } from './home/home.component';
-import { DocumentManager } from './documentManager/documentManager';
+import { FileManager } from './fileManager/fileManager.component';
 
 import { AuthComponent } from './auth/auth.component';
 import { AuthService } from './auth/auth.service';
 import { TokenStorage } from './shared/tokenStorage.service';
 import { ApiService } from './shared/api.service';
 
-import { EditorComponent } from './editor/editor.component';
+import { EditorComponent } from './pageEditor/editor.component';
 
 /*
  * App Component
@@ -35,11 +35,14 @@ import { EditorComponent } from './editor/editor.component';
       <ul id="nav">
       <button href="/"><li>&larr;</li></button>
       <button [routerLink]=" ['Index'] "><li>Index</li></button>
-      <button [disabled]="!isLoggedIn" [routerLink]=" ['DocumentManagement', {type: 'pages'}] ">
-        <li>Document Management</li>
+      <button [disabled]="!isLoggedIn" [routerLink]=" ['FileManager', {type: 'pages'}] ">
+        <li>File Management</li>
+      </button>
+      <button [disabled]="!isLoggedIn" [routerLink]=" ['EditorSelect'] ">
+        <li>Page Editor</li>
       </button>
       <button [disabled]="!isLoggedIn" [routerLink]=" ['Users'] ">
-        <li>Users</li>
+        <li>User Management</li>
       </button>
       </ul>
     </nav>
@@ -52,11 +55,11 @@ import { EditorComponent } from './editor/editor.component';
   encapsulation: ViewEncapsulation.None //Makes all styles in this global
 })
 @RouteConfig([
-  { path: '/',                component: HomeComponent,            name: 'Index' },
-  { path: '/documents/:type', component: DocumentManager,          name: 'DocumentManagement' },
-  { path: '/editor/:name',    component: EditorComponent,          name: 'Editor' },
-  { path: '/editor',          component: EditorComponent,          name: 'EditorSelect' },
-  { path: '/users',           component: HomeComponent,            name: 'Users' }
+  { path: '/',                component: HomeComponent,   name: 'Index' },
+  { path: '/documents/:type', component: FileManager,     name: 'FileManager' },
+  { path: '/editor/:name',    component: EditorComponent, name: 'PageEditor' },
+  { path: '/editor',          component: EditorComponent, name: 'EditorSelect' },
+  { path: '/users',           component: HomeComponent,   name: 'Users' }
 ])
 export class App {
   public isLoggedIn = false;
