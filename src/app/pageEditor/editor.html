@@ -1,0 +1,15 @@
+<h1>{{pageName}}</h1>
+This is going to be a wysiwyg editor
+<div *ngIf="!selected">
+  Select a Document to edit.
+  <button class="ucp-btn" [routerLink]="['PageEditor', {name: 'home.html'}]">Home</button>
+  <button class="ucp-btn" [routerLink]="['PageEditor', {name: 'about.html'}]">About</button>
+  <button class="ucp-btn" [routerLink]="['PageEditor', {name: 'resources.html'}]">Resources</button>
+  <button class="ucp-btn" [routerLink]="['PageEditor', {name: 'education.html'}]">Education</button>
+  <button class="ucp-btn" [routerLink]="['PageEditor', {name: 'careers.html'}]">Careers</button>
+  <button class="ucp-btn" [routerLink]="['PageEditor', {name: 'contact.html'}]">Contact</button>
+</div>
+<wysiwyg
+  [filename]="pageName"
+  *ngIf="pageName !== 'Select Page'"
+></wysiwyg>

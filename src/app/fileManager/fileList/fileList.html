@@ -1,0 +1,14 @@
+<div id="filter">
+  <button class="ucp-btn" [class.active]="filter === 'documents'" [routerLink]="['FileManager', {type: 'documents'}]">Documents</button>
+  <button class="ucp-btn" [class.active]="filter === 'images'" [routerLink]="['FileManager', {type: 'images'}]">Images</button>
+  <button class="ucp-btn" [class.active]="filter === 'pages'" [routerLink]="['FileManager', {type: 'pages'}]">Pages</button>
+  <button class="ucp-btn" [class.active]="filter === 'all'" [routerLink]="['FileManager', {type: 'all'}]">All</button>
+</div>
+<spinner *ngIf="loading"></spinner>
+<file
+  class="ucp-file ucp-fadein"
+  *ngFor="#file of files"
+  (click)="selectFile(file)"
+  [ngClass]="{active: file.active}"
+  [data]="file"
+></file>

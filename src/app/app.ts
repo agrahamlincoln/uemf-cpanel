@@ -14,6 +14,8 @@ import { ApiService } from './shared/api.service';
 
 import { EditorComponent } from './pageEditor/editor.component';
 
+import { UserManager } from './userManager/userManager.component';
+
 /*
  * App Component
  * Top Level Component
@@ -59,7 +61,7 @@ import { EditorComponent } from './pageEditor/editor.component';
   { path: '/documents/:type', component: FileManager,     name: 'FileManager' },
   { path: '/editor/:name',    component: EditorComponent, name: 'PageEditor' },
   { path: '/editor',          component: EditorComponent, name: 'EditorSelect' },
-  { path: '/users',           component: HomeComponent,   name: 'Users' }
+  { path: '/users',           component: UserManager,     name: 'Users' }
 ])
 export class App {
   public isLoggedIn = false;

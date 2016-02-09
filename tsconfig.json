@@ -27,6 +27,7 @@
     "./src/app/shared/api.service.ts",
     "./src/app/shared/spinner.component.ts",
     "./src/app/shared/tokenStorage.service.ts",
+    "./src/app/userManager/userManager.component.ts",
     "./src/main.ts",
     "./src/vendor.ts",
     "./test/injector.spec.ts",

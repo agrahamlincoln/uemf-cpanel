@@ -11,8 +11,18 @@ declare var tinymce: any;
   template: `
     <spinner *ngIf="loading"></spinner>
     <div id="editor-content" class='tinymce' [innerHTML]="content"></div>
-    <button (click)="save()">Save Changes</button>`,
+    <button class="ucp-btn" (click)="save()">
+      <span *ngIf="!saving">Save Changes</span>
+      <spinner *ngIf="saving"></spinner>
+    </button>
+    <button class="ucp-btn ucp-critical" (click)="revert()">
+      <span *ngIf="!reverting">Revert Changes</span>
+      <spinner *ngIf="reverting"></spinner>
+    </button>`,
   styles: [`
+    button {
+      width: 10em;
+    }
     #editor-content {
       animation: fadein 0.5s ease-in;
     }
@@ -27,6 +37,8 @@ declare var tinymce: any;
 export class Wysiwyg {
   public content: string;
   public loading: boolean = false;
+  public saving: boolean = false;
+  public reverting: boolean = false;
 
   constructor(
     private _api: ApiService
@@ -53,7 +65,7 @@ export class Wysiwyg {
         },
         err => (console.error(err)),
         () => {
-          console.log('API Call Complete: get ' + w.filename)
+          console.log('API Call Complete: get ' + w.filename);
           w.loading = false;
         }
       );
@@ -61,6 +73,7 @@ export class Wysiwyg {
 
   save() {
     var w = this;
+    w.saving = true;
     var newContent = document.getElementById('editor-content').innerHTML;
     if (newContent === w.content) {
       //Then the content has not changed
@@ -73,8 +86,18 @@ export class Wysiwyg {
       .subscribe(
         data => console.log(data),
         err => console.error(err),
-        () => console.log('API Call Complete: update ' + w.filename)
+        () => {
+          console.log('API Call Complete: update ' + w.filename);
+          w.saving = false;
+        }
       );
+  }
+
+  revert() {
+    var w = this;
+    w.reverting = true;
+    document.getElementById('editor-content').innerHTML = w.content;
+    w.reverting = false;
   }
 
 }

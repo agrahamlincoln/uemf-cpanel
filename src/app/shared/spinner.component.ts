@@ -1,5 +1,5 @@
 //angular2 Imports
-import { Component } from 'angular2/core';
+import { Component, Input } from 'angular2/core';
 
 @Component({
   selector: 'spinner',
@@ -12,9 +12,9 @@ import { Component } from 'angular2/core';
     </div>`,
   styles: [`
     .spinner {
-      margin: 100px auto;
-      width: 50px;
-      height: 40px;
+      margin: 0 auto;
+      width: 100%;
+      height: 1.5em;
       text-align: center;
       font-size: 10px;
     }
@@ -66,5 +66,5 @@ import { Component } from 'angular2/core';
   `]
 })
 export class SpinnerComponent {
-  constructor() { }
+  constructor() {}
 }

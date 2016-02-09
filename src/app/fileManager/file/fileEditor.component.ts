@@ -8,12 +8,12 @@ import { ApiService } from '../../shared/api.service';
 @Component({
   selector: 'file-editor',
   template: `
-  <div class="input-group">
+  <div class="ucp-input-group">
     <label>File Name</label>
     <input type="text" [(ngModel)]="fileData.name"/>
   </div>
-  <button (click)="rename(fileData)"> Save Changes</button>
-  <button (click)="cancel(fileData)" class="critical">Cancel</button>
+  <button class="ucp-btn" (click)="rename(fileData)"> Save Changes</button>
+  <button class="ucp-btn ucp-critical" (click)="cancel(fileData)" class="critical">Cancel</button>
   <span>{{info}}</span>
   `,
   styles: [require('./file.css')]

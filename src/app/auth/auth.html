@@ -10,7 +10,7 @@
     <label for="password">Password</label>
     <input name="password" type="password" [(ngModel)]="user.password">
   </div>
-  <button class="light" (click)="login()">Login</button>
+  <button class="ucp-btn light" (click)="login()">Login</button>
   <a (click)='showRegister()' class="small">Don't have an account?</a>
 
   <div class="cp-register" [hidden]='!displayRegister'>
@@ -22,6 +22,6 @@
       <label for="lastName">Last Name</label>
       <input name="lastName" type="text" [(ngModel)]="user.last_name">
     </div>
-    <button class="light" (click)="register()">Register</button>
+    <button class="ucp-btn light" (click)="register()">Register</button>
   </div>
 </div>

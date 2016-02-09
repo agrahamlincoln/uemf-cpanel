@@ -49,6 +49,7 @@ export class AuthService {
     //console.log('Token: "' + token + '"');
     if (!token) {
       authService._isLoggedIn = false;
+      console.log(authService._isLoggedInObserver);
       authService._isLoggedInObserver.next(authService._isLoggedIn);
     } else {
       //console.log('Got jwt: ' + token);

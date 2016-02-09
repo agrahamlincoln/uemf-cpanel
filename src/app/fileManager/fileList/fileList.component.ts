@@ -1,7 +1,7 @@
 //Angular2 Imports
 import {Component, OnInit} from 'angular2/core';
 import {NgClass} from 'angular2/common';
-import {RouteParams, RouterLink} from 'angular2/router';
+import {RouteParams, RouterLink, Router} from 'angular2/router';
 
 //Project Imports
 import {File} from '../file/file.interface';
@@ -11,78 +11,27 @@ import {SpinnerComponent} from '../../shared/spinner.component';
 
 @Component({
   selector: 'file-list',
-  template: `
-  <div id="filter">
-    <button [routerLink]="['FileManager', {type: 'documents'}]">Documents</button>
-    <button [routerLink]="['FileManager', {type: 'images'}]">Images</button>
-    <button [routerLink]="['FileManager', {type: 'pages'}]">Pages</button>
-    <button [routerLink]="['FileManager', {type: 'all'}]">All</button>
-  </div>
-  <spinner *ngIf="loading"></spinner>
-  <file
-    *ngFor="#file of files"
-    (click)="selectFile(file)"
-    [ngClass]="{active: file.active}"
-    [data]="file"
-  ></file>
-  `,
-  styles: [`
-    file {
-      display: block;
-      cursor: pointer;
-      background: rgba(255,255,255,.3);
-      box-shadow: 0 1px 0.5px rgba(0,0,0,.4);
-      border-bottom: 1px solid rgba(255,255,255,.4);
-      transition: all 0.25s;
-      animation: fadein 0.5s ease-in;
-      padding: 0.5em 1em 0.5em 1em;
-    }
-
-    @keyframes fadein {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
-
-    .active {
-      cursor: initial;
-      margin: 0.5em 0;
-      transition: all 0.25s;
-      box-shadow: 0 3px 8px rgba(0,0,0,.4);
-    }
-
-    #filter {
-      margin: 0.5em 1em 1em 1em;
-      display: block;
-      width: 100%;
-    }
-    #filter button {
-      border: 0px;
-      margin: 0 1.5em;
-      min-width: 7em;
-      height: 2em;
-      font-size: 18px;
-      cursor: pointer;
-      color: #000;
-      background: rgba(255,255,255,.85);
-      box-shadow: 0 1px 3px rgba(0,0,0,.4);
-    }
-  `],
+  template: require('./fileList.html'),
+  styles: [require('./fileList.css')],
   directives: [FileComponent, NgClass, RouterLink, SpinnerComponent]
 })
 
 export class FileListComponent {
   public files: Array<File>;
   public loading: boolean;
+  public filter: string;
 
   constructor(
     private _api: ApiService,
-    private params: RouteParams
+    private params: RouteParams,
+    private _router: Router
   ) {}
 
   ngOnInit() {
     var fileList = this;
     fileList.loading = true;
-    var list = fileList._api.files(fileList.params.get('type'));
+    fileList.filter = fileList.params.get('type');
+    var list = fileList._api.files(fileList.filter);
     list
       .map(res => res.json())
       .subscribe(

@@ -15,43 +15,6 @@
   text-overflow: ellipsis;
 }
 
-button {
-  padding: 0 0.5em;
-  margin: 0 0.5em;
-  font-size: 1.1em;
-  cursor: pointer;
-  color: #000;
-  height: 1.5em;
-  line-height: 1.5em;
-  min-width: 5em;
-  background: rgba(255,255,255,.85);
-  box-shadow: 0 1px 3px rgba(0,0,0,.4);
-  border: 0px;
-}
-button:hover {
-  background-color: rgb(251,171,18);
-}
-button.critical:hover {
-  color: rgba(255,255,255,.8);
-  background-color: rgb(188, 8, 11);
-}
-
-input {
-  height: 1.5em;
-  width: 20em;
-  padding: 0.1em 1em 0.1em 1em;
-  font-size: 16px;
-}
-
-.input-group {
-  margin: 0.5em 0 1em 0;
-}
-.input-group label {
-  margin-right: 1em;
-  line-height: 1.5em;
-  font-size: 16px;
-}
-
 span.filesize {
   width: 7em;
   display: inline-block;

@@ -10,7 +10,7 @@ import {isTokenExpired} from '../shared/tokenStorage.service';
   selector: 'file-manager',
   directives: [FileListComponent],
   template: `
-  <h1>Document Manager</h1>
+  <h1>File Manager</h1>
   <file-list></file-list>
   `,
   styles: []
