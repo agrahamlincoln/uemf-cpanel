@@ -69,6 +69,18 @@ export class TokenStorage {
     return expireDate.valueOf() - Date.now().valueOf();
   }
 
+  public getScope() {
+    var tokenStorage = this;
+    var decoded: any;
+    decoded = tokenStorage._decodeToken(tokenStorage._jwt);
+
+    if (typeof decoded.scope === 'undefined') {
+      return null;
+    }
+
+    return decoded.scope;
+  }
+
   public getTokenExpirationDate(token: string) {
     var decoded: any;
     decoded = this._decodeToken(token);

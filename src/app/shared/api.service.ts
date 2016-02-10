@@ -48,6 +48,26 @@ export class ApiService {
     });
   }
 
+  edit_user(
+    userInfo: {
+      id: number,
+      first_name?: string,
+      last_name?: string,
+      email?: string,
+      password?: string
+    }
+  ) {
+    var api = this;
+    var token = localStorage.getItem('cpanelJwt') || null;
+    var headers = new Headers({
+      'Content-Type': 'application/json',
+      'authorization': 'Bearer ' + token
+    });
+    return api.http.put(API_BASE + 'user/' + userInfo.id, JSON.stringify(userInfo), {
+      headers: headers
+    });
+  }
+
   jwt_renew(token: string) {
     var api = this;
     var headers = new Headers({

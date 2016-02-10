@@ -116,6 +116,17 @@ nav ul li#current {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+@keyframes dropin {
+  from { position: relative; top: -2em; }
+  to   { position: initial; top: 0; }
+}
+@keyframes shake {
+  0% { position: relative; left: -5px; }
+  25% { position: relative; left: 5px; }
+  50% { position: relative; left: -5px; }
+  75% { position: relative; left: 5px; }
+  100% { position: initial; left: 0; }
+}
 
 .ucp-fadein {
   animation: fadein 0.5s ease-in;
@@ -123,8 +134,13 @@ nav ul li#current {
 
 .ucp-input-group {
   margin: 0.5em 0 1em 0;
+  display: table-row;
+}
+.ucp-input-group label, .ucp-input-group input {
+  display: table-cell;
 }
 .ucp-input-group label, .ucp-label {
+  padding: 0 1em 1em 1em;
   margin-right: 1em;
   line-height: 1.5em;
   font-size: 16px;
@@ -135,4 +151,24 @@ nav ul li#current {
   width: 20em;
   padding: 0.1em 1em 0.1em 1em;
   font-size: 16px;
+}
+
+input.ng-invalid {
+  border: 1px solid #BC080B;
+  border-left: 5px solid #BC080B;
+  animation: shake 0.33s linear;
+}
+
+.ucp-alert {
+  border: 1px solid #BC080B;
+  border-left: 5px solid #BC080B;
+  border-top: 0px;
+
+  color: #BC080B;
+  font-weight: bold;
+  color: #BC080B;
+  margin-bottom: 0.5em;
+  padding: 0.5em;
+
+  animation: dropin 0.25s ease-in;
 }

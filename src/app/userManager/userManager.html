@@ -1,0 +1,52 @@
+<h1>User Management</h1>
+Hello, {{user.first_name}} {{user.last_name}}!
+
+<form>
+  <h3>Change Information</h3>
+  <div class="ucp-input-group">
+    <label>First Name</label>
+    <input class="" type="text" [(ngModel)]="user.first_name" ngControl="first_name" #first_name="ngForm" required/>
+    <div [hidden]="first_name.valid || first_name.pristine" class="ucp-alert">First Name is required</div>
+  </div>
+  <div class="ucp-input-group">
+    <label>Last Name</label>
+    <input class=""
+           type="text"
+           [(ngModel)]="user.last_name"
+           ngControl="last_name" #last_name="ngForm"
+           required />
+    <div [hidden]="last_name.valid || last_name.pristine" class="ucp-alert">Last Name is required</div>
+  </div>
+  <hr />
+
+  <h3>Change Email</h3>
+  <div class="ucp-input-group">
+    <label>Email</label>
+    <input type="email"
+           [(ngModel)]="user.email"
+           ngControl="email" #email="ngForm"
+           required />
+    <div [hidden]="email.valid || email.pristine" class="ucp-alert">Email is required</div>
+  </div>
+  <hr />
+
+  <h3>Change Password</h3>
+  <div class="ucp-input-group">
+    <label>Old Password</label>
+    <input class="ucp-input" type="password" [(ngModel)]="password" ngControl="password" />
+  </div>
+  <div class="ucp-input-group">
+    <label>New Password</label>
+    <input class="ucp-input" type="password" [(ngModel)]="newPassword" ngControl="newPassword" />
+  </div>
+  <div class="ucp-input-group">
+    <label>Confirm Password</label>
+    <input class="ucp-input" type="password" [(ngModel)]="passwordConfirm" ngControl="passwordConfirm" />
+  </div>
+</form>
+
+<button class="ucp-btn" (click)="save()">
+  <span *ngIf="!submitting">Save Changes</span>
+  <spinner *ngIf="submitting"></spinner>
+</button>
+<span *ngIf="message">{{message}}</span>
