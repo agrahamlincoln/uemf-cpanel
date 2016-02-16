@@ -1,24 +1,43 @@
-<div class="cp-important" [hidden]="loggedIn">You are not logged in. You will not be able to access any part of this site without first logging in</div>
-<div class="cp-warning" [hidden]="warning">You will be logged out in {{secondsLeft}} seconds. <button (click)="logout()">Logout now</button><button (click)="sessionRenew()">Stay Logged In</button></div>
+<div [ngClass]="{'ucp-important': !loggedIn, 'ucp-info': loggedIn, 'ucp-warning': warning}">
+  <div *ngIf="!loggedIn">
+    You are not logged in. You will not be able to access any part of this site without first logging in.
+  </div>
 
-<div class="cp-login" *ngIf="!submitting" [hidden]="loggedIn">
-  <div class="cp-input">
+  <div *ngIf="loggedIn">
+    Hello, {{user.first_name}} {{user.last_name}}!
+    <span class="ucp-pull-right">
+      <button (click)="logout()">Logout</button>
+    </span>
+  </div>
+
+  <div *ngIf="warning">
+    You will be logged out in {{secondsLeft}} seconds.
+    <button (click)="sessionRenew()">Stay Logged In</button>
+  </div>
+  {{loginMessage}}
+</div>
+
+<div class="ucp-login" [hidden]="loggedIn">
+  <div class="ucp-input">
     <label for="email">Username</label>
     <input name="email" type="text" [(ngModel)]="user.email">
   </div>
-  <div class="cp-input">
+  <div class="ucp-input">
     <label for="password">Password</label>
     <input name="password" type="password" [(ngModel)]="user.password">
   </div>
-  <button class="ucp-btn light" (click)="login()">Login</button>
+  <button class="ucp-btn light" (click)="login()">
+    <span *ngIf="!submitting">Login</span>
+    <spinner *ngIf="submitting"></spinner>
+  </button>
   <a (click)='showRegister()' class="small">Don't have an account?</a>
 
-  <div class="cp-register" [hidden]='!displayRegister'>
-    <div class="cp-input">
+  <div class="ucp-register" [hidden]='!displayRegister'>
+    <div class="ucp-input">
       <label for="firstName">First Name</label>
       <input name="firstName" type="text" [(ngModel)]="user.first_name">
     </div>
-    <div class="cp-input">
+    <div class="ucp-input">
       <label for="lastName">Last Name</label>
       <input name="lastName" type="text" [(ngModel)]="user.last_name">
     </div>

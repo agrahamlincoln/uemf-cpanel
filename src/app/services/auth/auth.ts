@@ -88,9 +88,16 @@ export class AuthService {
           authService._isLoggedInObserver.next(authService._isLoggedIn);
         },
         err => {
+          let message = "An unexpected error occurred while attempting login. Server response code: " + err.status;
+          try {
+            let error = JSON.parse(err._body);
+            message = error.message;
+          } catch (SyntaxError) {
+            console.error("Could not parse JSON from error body.");
+          }
           //Oh noes, the api call was unsuccessful!
-          // TODO RESPOND API ERROR TO THE USER
-          console.error(err);
+          statusObserver.error(message);
+          statusObserver.complete();
         },
         () => {
           console.log('API Call Complete: Login');
@@ -98,6 +105,13 @@ export class AuthService {
         }
       );
     return loggingIn$;
+  }
+
+  public logout() {
+    let authService = this;
+    localStorage.removeItem('cpanelJwt');
+    authService._isLoggedIn = false;
+    authService._isLoggedInObserver.next(authService._isLoggedIn);
   }
 
   public register(
@@ -128,6 +142,11 @@ export class AuthService {
 
   public jwt_renew() {
     var authService = this;
+    let renewObserver;
+    let renewing$ = new Observable(observer => {
+      renewObserver = observer;
+      observer.next('Attempting to renew session...');
+    });
     let renew = authService._api.jwt_renew(authService._jwt);
     renew
       .map(res => res.json())
@@ -151,8 +170,10 @@ export class AuthService {
           clearInterval(authService._loginWarning);
           authService._startTokenExpriationTimer();
           // TODO ADD THIS PART HERE
-        }
+        },
+        () => renewObserver.complete()
       );
+    return renewing$;
   }
 
   private _startTokenExpriationTimer() {

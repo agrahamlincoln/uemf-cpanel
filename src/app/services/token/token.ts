@@ -35,10 +35,11 @@ export class TokenService {
       token = tokenStorage.getSaved();
     }
 
-    var parts = token.split('.');
-
-    if (parts.length !== 3) {
-      return false;
+    if (token) {
+      var parts = token.split('.');
+      if (parts.length !== 3) {
+        return false;
+      }
     }
 
     if (!token || tokenStorage.isTokenExpired(token)) {

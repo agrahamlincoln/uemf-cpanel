@@ -6,7 +6,6 @@ body {
 }
 header {
   padding: 35px 15px;
-  height: 80px;
   background: linear-gradient(#fff,#fff,#fff,#fff,#B4B4B4);
   border-top: solid 5px #BC080B;
 }
@@ -48,7 +47,7 @@ header {
 }
 
 a {
-    color: #03A9F4;
+    color: #BC080B;
 }
 
 button.ucp-btn {
@@ -110,7 +109,7 @@ button.ucp-btn:hover {
   text-align: right;
 }
 
-.ucp-input-group input, .ucp-input {
+.ucp-input-group input {
   height: 1.5em;
   width: 20em;
   padding: 0.1em 1em 0.1em 1em;

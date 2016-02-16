@@ -1,14 +1,18 @@
 import { Component } from 'angular2/core';
+import {CanActivate} from 'angular2/router';
 
 import { ApiService } from '../../services/api/api';
 import { TokenService } from '../../services/token/token';
 import { Spinner } from '../spinner/spinner';
+import {isTokenExpired} from '../../services/token/token';
 
 @Component({
   selector: 'user-manager',
   template: require('./userManager.html'),
   directives: [Spinner]
 })
+//Protected route, user must be logged in
+@CanActivate(() => isTokenExpired())
 export class UserManager {
 
   public password: string;

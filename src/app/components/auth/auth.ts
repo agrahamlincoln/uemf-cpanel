@@ -1,10 +1,14 @@
 //angular2 imports
 import {Component, OnInit} from 'angular2/core';
 import {Observable} from 'rxjs/Observable';
+import { NgClass } from 'angular2/common';
+
+import {Spinner} from '../spinner/spinner';
 
 //project imports
 import {User} from '../../interfaces/user/user';
 import {AuthService} from '../../services/auth/auth';
+import {TokenService} from '../../services/token/token';
 
 const DEFAULT_USER = {
   'id': 0,
@@ -23,40 +27,59 @@ const DEFAULT_USER = {
   selector: 'auth', // <auth></auth>
   styles: [ require('./auth.scss') ],
   template: require('./auth.html'),
+  directives: [NgClass, Spinner],
   providers: []
 })
 
 export class AuthComponent implements OnInit {
   public user: User;
+  public loginMessage: string = '';
 
   public submitting: boolean = false;
 
   //Controls notification visibility
   public loggedIn: boolean = false;
-  public warning: boolean = true;
+  public warning: boolean = false;
   public displayRegister: boolean = false;
   public secondsLeft: number;
   private _countdown: any;
   private _timeout: any;
 
   constructor(
+    private _token: TokenService,
     private _service: AuthService
   ) {
     var auth = this;
-    auth._service.isLoggedIn$.subscribe(updatedLoginStatus => auth.loggedIn = updatedLoginStatus);
+    auth._service.isLoggedIn$.subscribe(
+      updatedLoginStatus => {
+        auth.loggedIn = updatedLoginStatus;
+
+        //copy token data into component data
+        if (auth.loggedIn) {
+          let tokenData = auth._token.getScope();
+          console.log(tokenData);
+          auth.user.id = tokenData.id;
+          auth.user.first_name = tokenData.first_name;
+          auth.user.last_name = tokenData.last_name;
+          auth.user.register_date = tokenData.register_date;
+          auth.user.last_login = tokenData.last_login;
+          auth.user.email = tokenData.email;
+        }
+      }
+    );
     auth._service.loginWarning$.subscribe(remainingTime => {
       console.log('Login Warning triggered!');
       //Reset the countdown so we don't have multiple running at any point
       clearInterval(auth._countdown);
       clearInterval(auth._timeout);
       //Warning Retrieved, token will expire soon!
-      auth.warning = false;
+      auth.warning = true;
       auth.secondsLeft = Math.round(remainingTime / 1000);
       auth._countdown = setInterval(() => auth.secondsLeft-- , 1000);
       auth._timeout = setTimeout(() => {
         //Reset the auth componentS
         auth.loggedIn = false;
-        auth.warning = true;
+        auth.warning = false;
         clearInterval(auth._countdown);
       }, remainingTime);
     });
@@ -71,15 +94,26 @@ export class AuthComponent implements OnInit {
 
   login() {
     var auth = this;
+    auth.loginMessage = '';
     auth.submitting = true;
     let login: Observable<string> = auth._service.login(auth.user.email, auth.user.password);
-    login.subscribe(
-      message => console.log(message),
-      err => console.error(err),
-      () => {
-        auth.submitting = false;
-      }
-    );
+    login
+      .subscribe(
+        message => {
+          console.log(message);
+        },
+        err => {
+          auth.loginMessage = err;
+          auth.submitting = false;
+        },
+        () => {
+          auth.submitting = false;
+        }
+      );
+  }
+  logout() {
+    var auth = this;
+    auth._service.logout();
   }
   register() {
     var auth = this;
@@ -91,11 +125,17 @@ export class AuthComponent implements OnInit {
     );
   }
   sessionRenew() {
-    var auth = this;
-    auth._service.jwt_renew();
+    let auth = this;
+    let renew: Observable<string> = auth._service.jwt_renew();
+    renew.subscribe(
+      data => {
+        console.log(data);
+      },
+      () => console.log('JWT Renew Completed')
+    );
 
     //Reset the warning pane
-    auth.warning = true;
+    auth.warning = false;
     clearInterval(auth._countdown);
     clearTimeout(auth._timeout);
   }

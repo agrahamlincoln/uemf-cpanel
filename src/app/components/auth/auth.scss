@@ -1,23 +1,35 @@
-.cp-important {
+.ucp-info {
+  background-color: #373B35;
+  color: #fff;
+  padding: 0.5em 1em;
+  min-height: 25px;
+  line-height: 25px;
+}
+.ucp-warning {
+  background-color: rgb(251,171,18);
+  color: #fff;
+  padding: 0.5em 1em;
+}
+.ucp-important {
   background-color: #BC080B;
   color: #fff;
   padding: 0.5em 1em;
 }
 
-.cp-warning {
-  background-color: rgb(251,171,18);
-  color: #fff;
-  padding: 0.5em 1em;
+.ucp-pull-right {
+  float: right;
 }
 
-.cp-login {
+.ucp-login {
   padding: 1em 0.5em;
 }
-.cp-input {
+.ucp-input {
   display: inline-block;
   margin: 0 0 1em 0;
+  height: 1.5em;
+  font-size: 16px;
 }
-.cp-login label {
+.ucp-login label {
   width: 5em;
   display: inline-block;
 }
