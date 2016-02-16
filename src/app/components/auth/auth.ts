@@ -36,6 +36,7 @@ export class AuthComponent implements OnInit {
   public loginMessage: string = '';
 
   public submitting: boolean = false;
+  public renewing: boolean = false;
 
   //Controls notification visibility
   public loggedIn: boolean = false;
@@ -100,13 +101,14 @@ export class AuthComponent implements OnInit {
     login
       .subscribe(
         message => {
-          console.log(message);
+          auth.loginMessage = message;
         },
         err => {
           auth.loginMessage = err;
           auth.submitting = false;
         },
         () => {
+          auth.loginMessage = '';
           auth.submitting = false;
         }
       );
@@ -126,12 +128,16 @@ export class AuthComponent implements OnInit {
   }
   sessionRenew() {
     let auth = this;
+    auth.renewing = true;
     let renew: Observable<string> = auth._service.jwt_renew();
     renew.subscribe(
-      data => {
-        console.log(data);
+      message => {
+        auth.loginMessage = message;
       },
-      () => console.log('JWT Renew Completed')
+      () => {
+        auth.loginMessage = '';
+        auth.renewing = false;
+      }
     );
 
     //Reset the warning pane

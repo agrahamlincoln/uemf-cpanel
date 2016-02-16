@@ -27,6 +27,10 @@ export class FileListComponent {
   ) {}
 
   ngOnInit() {
+    this.loadFiles();
+  }
+
+  loadFiles() {
     var fileList = this;
     fileList.loading = true;
     fileList.filter = fileList.params.get('type');

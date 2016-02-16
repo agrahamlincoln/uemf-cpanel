@@ -1,6 +1,7 @@
 import { Component } from 'angular2/core';
 import {CanActivate} from 'angular2/router';
 
+import { AuthService } from '../../services/auth/auth';
 import { ApiService } from '../../services/api/api';
 import { TokenService } from '../../services/token/token';
 import { Spinner } from '../spinner/spinner';
@@ -23,6 +24,7 @@ export class UserManager {
   public submitting: boolean;
 
   constructor(
+    private _auth: AuthService,
     private _api: ApiService,
     private _token: TokenService
   ) {
@@ -67,6 +69,7 @@ export class UserManager {
           },
           err => console.error(err),
           () => {
+            userManager._auth.jwt_renew();
             console.log('Api Call Complete: Edit User');
             userManager.submitting = false;
           }

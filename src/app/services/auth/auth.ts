@@ -100,7 +100,7 @@ export class AuthService {
           statusObserver.complete();
         },
         () => {
-          console.log('API Call Complete: Login');
+          statusObserver.next('Login Success!');
           statusObserver.complete();
         }
       );

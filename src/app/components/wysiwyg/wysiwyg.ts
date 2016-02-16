@@ -3,6 +3,7 @@ import { Component, Input } from 'angular2/core';
 
 //project imports
 import { ApiService } from '../../services/api/api';
+import { AuthService } from '../../services/auth/auth';
 import { Spinner } from '../spinner/spinner';
 declare var tinymce: any;
 
@@ -42,6 +43,7 @@ export class Wysiwyg {
   public reverting: boolean = false;
 
   constructor(
+    private _auth: AuthService,
     private _api: ApiService
   ) { }
   @Input('filename') filename: string;
@@ -88,6 +90,7 @@ export class Wysiwyg {
         data => console.log(data),
         err => console.error(err),
         () => {
+          w._auth.jwt_renew();
           console.log('API Call Complete: update ' + w.filename);
           w.saving = false;
         }
