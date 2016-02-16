@@ -1,5 +1,3 @@
-# @AngularClass
-
 # Logs
 logs
 *.log
@@ -46,10 +44,7 @@ Thumbs.db
 /dist
 /public/__build__/
 /src/*/__build__/
-/__build__/**
-/public/dist/
-/src/*/dist/
-/dist/**
+__build__/**
 .webpack.json
 
 # Doc #

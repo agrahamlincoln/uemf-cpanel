@@ -1,46 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ES5",
     "module": "commonjs",
-    "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "noEmitHelpers": false,
-    "sourceMap": true
+    "sourceMap": true,
+    "moduleResolution": "node"
   },
-  "files": [
-    "./src/app/app.spec.ts",
-    "./src/app/app.ts",
-    "./src/app/auth/auth.component.ts",
-    "./src/app/auth/auth.service.ts",
-    "./src/app/auth/user.interface.ts",
-    "./src/app/fileManager/file/file.component.ts",
-    "./src/app/fileManager/file/file.interface.ts",
-    "./src/app/fileManager/file/fileEditor.component.ts",
-    "./src/app/fileManager/fileList/fileList.component.ts",
-    "./src/app/fileManager/fileManager.component.ts",
-    "./src/app/fileManager/filesize.pipe.ts",
-    "./src/app/home/home.component.ts",
-    "./src/app/pageEditor/editor.component.ts",
-    "./src/app/pageEditor/tiny-editor.ts",
-    "./src/app/pageEditor/wysiwyg.component.ts",
-    "./src/app/shared/api.service.ts",
-    "./src/app/shared/spinner.component.ts",
-    "./src/app/shared/tokenStorage.service.ts",
-    "./src/app/userManager/userManager.component.ts",
-    "./src/main.ts",
-    "./src/vendor.ts",
-    "./test/injector.spec.ts",
-    "./test/sanity-test.spec.ts"
-  ],
-  "filesGlob": [
-    "./src/**/*.ts",
-    "./test/**/*.ts",
-    "!./node_modules/**/*.ts"
+  "exclude": [
+    "node_modules"
   ],
   "compileOnSave": false,
-  "buildOnSave": false,
-  "atom": {
-    "rewriteTsconfig": true
-  }
+  "buildOnSave": false
 }

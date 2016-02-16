@@ -1,0 +1,26 @@
+<div id="gradient"><div>
+<div id="wrapper">
+  <auth></auth>
+  <header>
+    <h1>UEMF Control Panel</h1>
+  </header>
+  <nav>
+    <ul id="nav">
+    <button href="/"><li>&larr;</li></button>
+    <button [routerLink]=" ['Index'] "><li>Index</li></button>
+    <button [disabled]="!isLoggedIn" [routerLink]=" ['FileManager', {type: 'pages'}] ">
+      <li>File Management</li>
+    </button>
+    <button [disabled]="!isLoggedIn" [routerLink]=" ['EditorSelect'] ">
+      <li>Page Editor</li>
+    </button>
+    <button [disabled]="!isLoggedIn" [routerLink]=" ['Users'] ">
+      <li>User Management</li>
+    </button>
+    </ul>
+  </nav>
+
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -1,60 +1,32 @@
-//angular2 imports
-import {Component, ViewEncapsulation} from 'angular2/core';
+import {Component} from 'angular2/core';
 import {Location, RouteConfig, Router, ROUTER_DIRECTIVES} from 'angular2/router';
 import {FORM_PROVIDERS} from 'angular2/common';
 
+import '../style/app.scss';
+
 //project imports
-import { HomeComponent } from './home/home.component';
-import { FileManager } from './fileManager/fileManager.component';
+import { HomeComponent } from './components/home/home';
+import { AuthComponent } from './components/auth/auth';
+import { EditorComponent } from './components/editor/editor';
+import { UserManager } from './components/userManager/userManager';
+import { FileManager } from './components/fileManager/fileManager';
 
-import { AuthComponent } from './auth/auth.component';
-import { AuthService } from './auth/auth.service';
-import { TokenStorage } from './shared/tokenStorage.service';
-import { ApiService } from './shared/api.service';
+import { AuthService } from './services/auth/auth';
+import { TokenService } from './services/token/token';
+import { ApiService } from './services/api/api';
 
-import { EditorComponent } from './pageEditor/editor.component';
-
-import { UserManager } from './userManager/userManager.component';
 
 /*
  * App Component
  * Top Level Component
  */
 @Component({
-  selector: 'app',
-  providers: [ ...FORM_PROVIDERS, AuthService, TokenStorage, ApiService],
-  directives: [ ...ROUTER_DIRECTIVES, AuthComponent],
-  pipes: [],
-  styles: [ require('./app.css') ],
-  template: `
-  <div id="gradient"><div>
-  <div id="wrapper">
-    <auth></auth>
-    <header>
-      <h1>UEMF Control Panel</h1>
-    </header>
-    <nav>
-      <ul id="nav">
-      <button href="/"><li>&larr;</li></button>
-      <button [routerLink]=" ['Index'] "><li>Index</li></button>
-      <button [disabled]="!isLoggedIn" [routerLink]=" ['FileManager', {type: 'pages'}] ">
-        <li>File Management</li>
-      </button>
-      <button [disabled]="!isLoggedIn" [routerLink]=" ['EditorSelect'] ">
-        <li>Page Editor</li>
-      </button>
-      <button [disabled]="!isLoggedIn" [routerLink]=" ['Users'] ">
-        <li>User Management</li>
-      </button>
-      </ul>
-    </nav>
-
-    <main>
-      <router-outlet></router-outlet>
-    </main>
-  </div>
-  `,
-  encapsulation: ViewEncapsulation.None //Makes all styles in this global
+    selector: 'app', // <app></app>
+    providers: [ ...FORM_PROVIDERS, AuthService, TokenService, ApiService],
+    directives: [ ...ROUTER_DIRECTIVES, AuthComponent],
+    pipes: [],
+    styles: [require('./app.scss')],
+    template: require('./app.html')
 })
 @RouteConfig([
   { path: '/',                component: HomeComponent,   name: 'Index' },
@@ -82,8 +54,9 @@ export class App {
         app._router.navigate(['Index']);
       } else {
         console.log('User is logged in, redirecting to last route: ' + app._lastRoute);
-        if (app._lastRoute)
+        if (app._lastRoute) {
           app._router.navigateByUrl(app._lastRoute);
+        }
       }
     });
   }
