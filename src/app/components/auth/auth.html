@@ -6,7 +6,7 @@
   <div *ngIf="loggedIn">
     Hello, {{user.first_name}} {{user.last_name}}!
     <span class="ucp-pull-right">
-      <button (click)="logout()">Logout</button>
+      <button class="ucp-btn secondary light" (click)="logout()">Logout</button>
     </span>
   </div>
 
@@ -21,29 +21,31 @@
 </div>
 
 <div class="ucp-login" [hidden]="loggedIn">
-  <div class="ucp-input">
-    <label for="email">Username</label>
-    <input name="email" type="text" [(ngModel)]="user.email">
-  </div>
-  <div class="ucp-input">
-    <label for="password">Password</label>
-    <input name="password" type="password" [(ngModel)]="user.password">
-  </div>
-  <button class="ucp-btn light" (click)="login()">
-    <span *ngIf="!submitting">Login</span>
-    <spinner *ngIf="submitting"></spinner>
-  </button>
-  <a (click)='showRegister()' class="small">Don't have an account?</a>
+  <form *ngIf="formActive" (ngSubmit)="login()">
+    <div class="ucp-input">
+      <label for="email">Username</label>
+      <input name="email" type="text" [(ngModel)]="user.email" required>
+    </div>
+    <div class="ucp-input">
+      <label for="password">Password</label>
+      <input name="password" type="password" [(ngModel)]="user.password" required>
+    </div>
+    <button class="ucp-btn light" type="submit">
+      <span *ngIf="!submitting">Login</span>
+      <spinner *ngIf="submitting"></spinner>
+    </button>
+    <a (click)='showRegister()' class="small">Don't have an account?</a>
 
-  <div class="ucp-register" [hidden]='!displayRegister'>
-    <div class="ucp-input">
-      <label for="firstName">First Name</label>
-      <input name="firstName" type="text" [(ngModel)]="user.first_name">
+    <div class="ucp-register" [hidden]='!displayRegister'>
+      <div class="ucp-input">
+        <label for="firstName">First Name</label>
+        <input name="firstName" type="text" [(ngModel)]="user.first_name">
+      </div>
+      <div class="ucp-input">
+        <label for="lastName">Last Name</label>
+        <input name="lastName" type="text" [(ngModel)]="user.last_name">
+      </div>
+      <button class="ucp-btn light" (click)="register()">Register</button>
     </div>
-    <div class="ucp-input">
-      <label for="lastName">Last Name</label>
-      <input name="lastName" type="text" [(ngModel)]="user.last_name">
-    </div>
-    <button class="ucp-btn light" (click)="register()">Register</button>
-  </div>
+  </form>
 </div>

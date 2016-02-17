@@ -35,8 +35,10 @@ export class AuthComponent implements OnInit {
   public user: User;
   public loginMessage: string = '';
 
+  //Async Status Booleans
   public submitting: boolean = false;
   public renewing: boolean = false;
+  public formActive: boolean = true;
 
   //Controls notification visibility
   public loggedIn: boolean = false;
@@ -101,6 +103,10 @@ export class AuthComponent implements OnInit {
     login
       .subscribe(
         message => {
+          //reset the form
+          auth.formActive = false;
+          //We use this cheap hack because angular2 doesnt have a way to reset ngControl states
+          setTimeout(() => auth.formActive = true, 0);
           auth.loginMessage = message;
         },
         err => {

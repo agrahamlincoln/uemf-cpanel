@@ -62,6 +62,25 @@ button.ucp-btn:hover {
   background: rgba(0,0,0,.4);
 }
 
+.ucp-btn {
+  &.secondary {
+    background: none;
+    color: #000;
+    border: 1px solid rgba(0,0,0,.25);
+    box-shadow: none;
+
+    &.light {
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.25);
+
+      &:hover {
+        background-color: rgba(255,255,255,.25);
+        border: 0px;
+      }
+    }
+  }
+}
+
 .ucp-btn.active {
   background: rgba(0,0,0,.4);
 }
@@ -116,7 +135,7 @@ button.ucp-btn:hover {
   font-size: 16px;
 }
 
-input.ng-invalid {
+input.ng-dirty.ng-invalid {
   border: 1px solid #BC080B;
   border-left: 5px solid #BC080B;
   animation: shake 0.33s linear;
