@@ -1,22 +1,27 @@
-import {Injectable} from 'angular2/core';
+import {Inject, Injectable, Optional} from 'angular2/core';
 import {Http, Headers} from 'angular2/http';
 //import { TokenService } from '../token/token';
-
-const API_BASE = 'http://localhost:3001/api/v1/';
+import {ApiOptions} from './api.options';
 
 @Injectable()
 export class ApiService {
-  constructor(
-    public http: Http
-  ) {}
+  private options = {
+    baseUrl: '/',
+    jwtName: 'cpanelJwt'
+  };
+  constructor(public http: Http,
+              @Optional() @Inject(ApiOptions) options) {
+    if (options) {
+      Object.assign(this.options, options);
+    }
+  }
 
   get(url: string) {
-    var api = this;
-    var token = localStorage.getItem('cpanelJwt') || null;
+    var token = localStorage.getItem(this.options.jwtName) || null;
     var headers = new Headers({
       'authorization': 'Bearer ' + token
     });
-    return api.http.get('http://localhost:3001/' + url, {headers: headers});
+    return this.http.get('http://localhost:3001/' + url, {headers: headers});
   }
 
   login(credentials: { email: string, password: string }) {
@@ -25,7 +30,7 @@ export class ApiService {
     var headers = new Headers({
       'Content-Type': 'application/json'
     });
-    return api.http.post(API_BASE + 'auth/login', JSON.stringify(credentials), {
+    return api.http.post(this.options.baseUrl + 'auth/login', JSON.stringify(credentials), {
       headers: headers
     });
   }
@@ -43,7 +48,7 @@ export class ApiService {
     var headers = new Headers({
       'Content-Type': 'application/json'
     });
-    return api.http.post(API_BASE + 'auth/register', JSON.stringify(credentials), {
+    return api.http.post(this.options.baseUrl + 'auth/register', JSON.stringify(credentials), {
       headers: headers
     });
   }
@@ -58,12 +63,12 @@ export class ApiService {
     }
   ) {
     var api = this;
-    var token = localStorage.getItem('cpanelJwt') || null;
+    var token = localStorage.getItem(this.options.jwtName) || null;
     var headers = new Headers({
       'Content-Type': 'application/json',
       'authorization': 'Bearer ' + token
     });
-    return api.http.put(API_BASE + 'user/' + userInfo.id, JSON.stringify(userInfo), {
+    return api.http.put(this.options.baseUrl + 'user/' + userInfo.id, JSON.stringify(userInfo), {
       headers: headers
     });
   }
@@ -73,21 +78,21 @@ export class ApiService {
     var headers = new Headers({
       'authorization': 'Bearer ' + token
     });
-    return api.http.get(API_BASE + 'auth/jwt_renew', {headers: headers});
+    return api.http.get(this.options.baseUrl + 'auth/jwt_renew', {headers: headers});
   }
 
   files(type: string) {
     var api = this;
-    var token = localStorage.getItem('cpanelJwt') || null;
+    var token = localStorage.getItem(this.options.jwtName) || null;
     var headers = new Headers({
       'authorization': 'Bearer ' + token
     });
-    return api.http.get(API_BASE + 'files/' + type, {headers: headers});
+    return api.http.get(this.options.baseUrl + 'files/' + type, {headers: headers});
   }
 
   update(path: string, content: string) {
     var api = this;
-    var token = localStorage.getItem('cpanelJwt') || null;
+    var token = localStorage.getItem(this.options.jwtName) || null;
     var headers = new Headers({
       'authorization': 'Bearer ' + token
     });
@@ -95,12 +100,12 @@ export class ApiService {
       'path': path,
       'content': content
     };
-    return api.http.put(API_BASE + 'files', JSON.stringify(data), {headers: headers});
+    return api.http.put(this.options.baseUrl + 'files', JSON.stringify(data), {headers: headers});
   }
 
   rename(path: string, newname: string) {
     var api = this;
-    var token = localStorage.getItem('cpanelJwt') || null;
+    var token = localStorage.getItem(this.options.jwtName) || null;
     var headers = new Headers({
       'authorization': 'Bearer ' + token
     });
@@ -108,17 +113,17 @@ export class ApiService {
       'path': path,
       'name': newname
     };
-    return api.http.put(API_BASE + 'files/rename', JSON.stringify(data), {headers: headers});
+    return api.http.put(this.options.baseUrl + 'files/rename', JSON.stringify(data), {headers: headers});
   }
 
   delete(path: string) {
     var api = this;
-    var token = localStorage.getItem('cpanelJwt') || null;
+    var token = localStorage.getItem(this.options.jwtName) || null;
     var headers = new Headers({
       'authorization': 'Bearer ' + token
     });
     var data = { 'path': path };
-    return api.http.post(API_BASE + 'files/delete', JSON.stringify(data), {headers: headers});
+    return api.http.post(this.options.baseUrl + 'files/delete', JSON.stringify(data), {headers: headers});
   }
 
 }

@@ -5,6 +5,12 @@ import {bootstrap, ELEMENT_PROBE_PROVIDERS} from 'angular2/platform/browser';
 import {ROUTER_PROVIDERS, HashLocationStrategy, LocationStrategy} from 'angular2/router';
 import {HTTP_PROVIDERS} from 'angular2/http';
 
+import {ApiOptions} from './app/services/api/api.options';
+let apiOptions = {
+  baseUrl: 'http://localhost:3001/api/v1/',
+  jwtName: 'uemf-org-jwt'
+};
+
 const ENV_PROVIDERS = [];
 // depending on the env mode, enable prod mode or add debugging modules
 if(process.env.ENV === 'prod') {
@@ -29,7 +35,8 @@ document.addEventListener('DOMContentLoaded', function main() {
         ...HTTP_PROVIDERS,
         ...ROUTER_PROVIDERS,
         ...ENV_PROVIDERS,
-        provide(LocationStrategy, {useClass: HashLocationStrategy}) // use #/ routes, remove this for HTML5 mode
+        provide(LocationStrategy, {useClass: HashLocationStrategy}),
+        provide(ApiOptions, { useValue: new ApiOptions(apiOptions)}) // use #/ routes, remove this for HTML5 mode
     ])
     .catch(err => console.error(err));
 });
