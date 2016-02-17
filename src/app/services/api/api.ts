@@ -16,12 +16,12 @@ export class ApiService {
     }
   }
 
-  get(url: string) {
-    var token = localStorage.getItem(this.options.jwtName) || null;
+  get(url: string, token?: string) {
+    let jwt = token || localStorage.getItem(this.options.jwtName);
     var headers = new Headers({
-      'authorization': 'Bearer ' + token
+      'authorization': 'Bearer ' + jwt
     });
-    return this.http.get('http://localhost:3001/' + url, {headers: headers});
+    return this.http.get(url, {headers: headers});
   }
 
   login(credentials: { email: string, password: string }) {
