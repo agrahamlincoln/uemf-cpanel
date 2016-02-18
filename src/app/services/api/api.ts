@@ -25,12 +25,10 @@ export class ApiService {
   }
 
   login(credentials: { email: string, password: string }) {
-    var api = this;
-
     var headers = new Headers({
       'Content-Type': 'application/json'
     });
-    return api.http.post(this.options.baseUrl + 'auth/login', JSON.stringify(credentials), {
+    return this.http.post(this.options.baseUrl + 'auth/login', JSON.stringify(credentials), {
       headers: headers
     });
   }
@@ -60,15 +58,15 @@ export class ApiService {
       last_name?: string,
       email?: string,
       password?: string
-    }
+    },
+    token?: string
   ) {
-    var api = this;
-    var token = localStorage.getItem(this.options.jwtName) || null;
+    let jwt = token || localStorage.getItem(this.options.jwtName);
     var headers = new Headers({
       'Content-Type': 'application/json',
-      'authorization': 'Bearer ' + token
+      'authorization': 'Bearer ' + jwt
     });
-    return api.http.put(this.options.baseUrl + 'user/' + userInfo.id, JSON.stringify(userInfo), {
+    return this.http.put(this.options.baseUrl + 'user/' + userInfo.id, JSON.stringify(userInfo), {
       headers: headers
     });
   }

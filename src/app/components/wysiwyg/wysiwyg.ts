@@ -51,7 +51,7 @@ export class Wysiwyg {
   ngOnInit() {
     var w = this;
     w.loading = true;
-    let source = w._api.get('content/pages/' + w.filename);
+    let source = w._api.get('https://uemf.org/content/pages/' + w.filename);
     source
       .map(res => res.text())
       .subscribe(
