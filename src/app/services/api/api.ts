@@ -18,14 +18,14 @@ export class ApiService {
 
   get(url: string, token?: string) {
     let jwt = token || localStorage.getItem(this.options.jwtName);
-    var headers = new Headers({
+    let headers = new Headers({
       'authorization': 'Bearer ' + jwt
     });
     return this.http.get(url, {headers: headers});
   }
 
   login(credentials: { email: string, password: string }) {
-    var headers = new Headers({
+    let headers = new Headers({
       'Content-Type': 'application/json'
     });
     return this.http.post(this.options.baseUrl + 'auth/login', JSON.stringify(credentials), {
@@ -41,12 +41,10 @@ export class ApiService {
       last_name: string
     }
   ) {
-    var api = this;
-
-    var headers = new Headers({
+    let headers = new Headers({
       'Content-Type': 'application/json'
     });
-    return api.http.post(this.options.baseUrl + 'auth/register', JSON.stringify(credentials), {
+    return this.http.post(this.options.baseUrl + 'auth/register', JSON.stringify(credentials), {
       headers: headers
     });
   }
@@ -62,7 +60,7 @@ export class ApiService {
     token?: string
   ) {
     let jwt = token || localStorage.getItem(this.options.jwtName);
-    var headers = new Headers({
+    let headers = new Headers({
       'Content-Type': 'application/json',
       'authorization': 'Bearer ' + jwt
     });
@@ -72,56 +70,51 @@ export class ApiService {
   }
 
   jwt_renew(token: string) {
-    var api = this;
-    var headers = new Headers({
+    let headers = new Headers({
       'authorization': 'Bearer ' + token
     });
-    return api.http.get(this.options.baseUrl + 'auth/jwt_renew', {headers: headers});
+    return this.http.get(this.options.baseUrl + 'auth/jwt_renew', {headers: headers});
   }
 
-  files(type: string) {
-    var api = this;
-    var token = localStorage.getItem(this.options.jwtName) || null;
-    var headers = new Headers({
-      'authorization': 'Bearer ' + token
+  files(type: string, token?: string) {
+    let jwt = token || localStorage.getItem(this.options.jwtName);
+    let headers = new Headers({
+      'authorization': 'Bearer ' + jwt
     });
-    return api.http.get(this.options.baseUrl + 'files/' + type, {headers: headers});
+    return this.http.get(this.options.baseUrl + 'files/' + type, {headers: headers});
   }
 
-  update(path: string, content: string) {
-    var api = this;
-    var token = localStorage.getItem(this.options.jwtName) || null;
-    var headers = new Headers({
-      'authorization': 'Bearer ' + token
+  update(path: string, content: string, token?: string) {
+    let jwt = token || localStorage.getItem(this.options.jwtName);
+    let headers = new Headers({
+      'authorization': 'Bearer ' + jwt
     });
-    var data = {
+    let data = {
       'path': path,
       'content': content
     };
-    return api.http.put(this.options.baseUrl + 'files', JSON.stringify(data), {headers: headers});
+    return this.http.put(this.options.baseUrl + 'files', JSON.stringify(data), {headers: headers});
   }
 
-  rename(path: string, newname: string) {
-    var api = this;
-    var token = localStorage.getItem(this.options.jwtName) || null;
-    var headers = new Headers({
-      'authorization': 'Bearer ' + token
+  rename(path: string, newname: string, token?: string) {
+    let jwt = token || localStorage.getItem(this.options.jwtName);
+    let headers = new Headers({
+      'authorization': 'Bearer ' + jwt
     });
-    var data = {
+    let data = {
       'path': path,
       'name': newname
     };
-    return api.http.put(this.options.baseUrl + 'files/rename', JSON.stringify(data), {headers: headers});
+    return this.http.put(this.options.baseUrl + 'files/rename', JSON.stringify(data), {headers: headers});
   }
 
-  delete(path: string) {
-    var api = this;
-    var token = localStorage.getItem(this.options.jwtName) || null;
-    var headers = new Headers({
-      'authorization': 'Bearer ' + token
+  delete(path: string, token?: string) {
+    let jwt = token || localStorage.getItem(this.options.jwtName);
+    let headers = new Headers({
+      'authorization': 'Bearer ' + jwt
     });
-    var data = { 'path': path };
-    return api.http.post(this.options.baseUrl + 'files/delete', JSON.stringify(data), {headers: headers});
+    let data = { 'path': path };
+    return this.http.post(this.options.baseUrl + 'files/delete', JSON.stringify(data), {headers: headers});
   }
 
 }

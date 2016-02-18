@@ -71,7 +71,7 @@ describe('Simple GET Request', () => {
   });
 
   describe('ApiService.edit_user()', () => {
-    it('should...', inject([ApiService], (api:ApiService) => {
+    it('should call http.put and return the raw response', inject([ApiService], (api:ApiService) => {
       let userInfo = {
         id: 0,
         first_name: 'foo',
@@ -89,33 +89,60 @@ describe('Simple GET Request', () => {
       expect(response).toBe('PUT response');
     }))
   });
-  describe('ApiService.func()', () => {
-    it('should...', inject([ApiService], (api:ApiService) => {
 
-    }))
-  });
-  describe('ApiService.func()', () => {
-    it('should...', inject([ApiService], (api:ApiService) => {
-
-    }))
-  });
-  describe('ApiService.func()', () => {
-    it('should...', inject([ApiService], (api:ApiService) => {
-
-    }))
-  });
-  describe('ApiService.func()', () => {
-    it('should...', inject([ApiService], (api:ApiService) => {
-
-    }))
-  });
-  describe('ApiService.func()', () => {
-    it('should...', inject([ApiService], (api:ApiService) => {
-
+  describe('ApiService.jwt_renew()', () => {
+    it('should call http.get and return the raw response', inject([ApiService], (api:ApiService) => {
+      let token = 'jwt';
+      let response = api.jwt_renew(token);
+      let headers = {headers: new Headers({'authorization': 'Bearer jwt'})};
+      expect(http.get).toHaveBeenCalledWith('https://api.com/auth/jwt_renew', headers);
+      expect(response).toBe('GET response');
     }))
   });
 
-  it("should equal true", () => {
-    expect(true).toBe(true);
-  })
+  describe('ApiService.files()', () => {
+    it('should call http.get and return the raw response', inject([ApiService], (api:ApiService) => {
+      let type = 'foo';
+      let token = 'jwt';
+      let response = api.files(type, token);
+      let headers = {headers: new Headers({'authorization': 'Bearer jwt'})};
+      expect(http.get).toHaveBeenCalledWith('https://api.com/files/foo', headers);
+      expect(response).toBe('GET response');
+    }))
+  });
+
+  describe('ApiService.update()', () => {
+    it('should call http.put and return the raw response', inject([ApiService], (api:ApiService) => {
+      let path = 'foo/bar.html';
+      let content = 'baz';
+      let token = 'jwt';
+      let response = api.update(path, content, token);
+      let headers = {headers: new Headers({'authorization': 'Bearer jwt'})};
+      expect(http.put).toHaveBeenCalledWith('https://api.com/files', JSON.stringify({path: path, content: content}), headers);
+      expect(response).toBe('PUT response');
+    }))
+  });
+
+  describe('ApiService.rename()', () => {
+    it('should call http.put and return the raw response', inject([ApiService], (api:ApiService) => {
+      let path = 'foo/bar.jpg';
+      let newname = 'baz.jpg';
+      let token = 'jwt';
+      let response = api.rename(path, newname, token);
+      let headers = {headers: new Headers({'authorization': 'Bearer jwt'})};
+      expect(http.put).toHaveBeenCalledWith('https://api.com/files/rename', JSON.stringify({path: path, name: newname}), headers);
+      expect(response).toBe('PUT response');
+    }))
+  });
+
+  describe('ApiService.delete()', () => {
+    it('should call http.post and return the raw response', inject([ApiService], (api:ApiService) => {
+      let path = 'foo/bar.jpg';
+      let token = 'jwt';
+      let response = api.delete(path, token);
+      let headers = {headers: new Headers({'authorization': 'Bearer jwt'})};
+      expect(http.post).toHaveBeenCalledWith('https://api.com/files/delete', JSON.stringify({path: path}), headers);
+      expect(response).toBe('POST response');
+    }))
+  });
 });
