@@ -8,7 +8,8 @@ import {HTTP_PROVIDERS} from 'angular2/http';
 import {ApiOptions} from './app/services/api/api.options';
 let apiOptions = {
   baseUrl: 'http://localhost:3001/api/v1/',
-  jwtName: 'uemf-org-jwt'
+  jwtName: 'uemf-org-jwt',
+  timeout: '2'
 };
 
 const ENV_PROVIDERS = [];

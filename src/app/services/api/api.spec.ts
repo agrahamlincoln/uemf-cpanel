@@ -8,10 +8,12 @@ import {
   beforeEachProviders
 } from 'angular2/testing';
 import {MockBackend} from 'angular2/http/testing';
-import {BaseRequestOptions, ConnectionBackend, Http, Headers, HTTP_PROVIDERS, Response, ResponseOptions, XHRBackend} from 'angular2/http';
+import {BaseRequestOptions, Http, Headers, HTTP_PROVIDERS, Response, ResponseOptions, XHRBackend} from 'angular2/http';
 
 import {Observable} from 'rxjs/Rx';
+import {ReplaySubject} from 'rxjs/subject/ReplaySubject';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/timeout'
 
 import {ApiService} from './api';
 import {ApiOptions} from './api.options';
@@ -68,6 +70,68 @@ describe('ApiService', () => {
       expect(http.get).toHaveBeenCalledWith('https://foo.bar', {headers: authHeader});
     }));
 
+    it('edit_user should call http.put and return the raw response', inject([ApiService], (api:ApiService) => {
+      let userInfo = {
+        id: 0,
+        first_name: 'foo',
+        last_name: 'bar',
+        email: 'foo@bar.com',
+        password: 'hunter2'
+      };
+      api.edit_user(userInfo, 'jwt')
+        .map((data: Response) => data.text())
+        .subscribe(data => expect(data).toBe('bar'));
+      let headers = {headers: new Headers({
+        'Content-Type': 'application/json',
+        'authorization': 'Bearer jwt'
+      })};
+      expect(http.put).toHaveBeenCalledWith('https://foo.bar/user/0', JSON.stringify(userInfo), headers);
+    }));
+
+    it('jwt_renew should call http.get and return the raw response', inject([ApiService], (api:ApiService) => {
+      api.jwt_renew('jwt')
+        .map((data: Response) => data.text())
+        .subscribe(data => expect(data).toBe('bar'));
+      let headers = {headers: authHeader};
+      expect(http.get).toHaveBeenCalledWith('https://foo.bar/auth/jwt_renew', headers);
+    }));
+
+    it('files should call http.get and return the raw response', inject([ApiService], (api:ApiService) => {
+      api.files('foo', 'jwt')
+        .map((data: Response) => data.text());
+      let headers = {headers: authHeader};
+      expect(http.get).toHaveBeenCalledWith('https://foo.bar/files/foo', headers);
+    }));
+
+    it('update should call http.put and return the raw response', inject([ApiService], (api:ApiService) => {
+      let path = 'foo/bar.html';
+      let content = 'baz';
+      let token = 'jwt';
+      api.update(path, content, token)
+        .map((data: Response) => data.text())
+        .subscribe(data => expect(data).toBe('bar'));
+      let headers = {headers: authHeader};
+      expect(http.put).toHaveBeenCalledWith('https://foo.bar/files', JSON.stringify({path: path, content: content}), headers);
+    }));
+
+    it('rename should call http.put and return the raw response', inject([ApiService], (api:ApiService) => {
+      let path = 'foo/bar.jpg';
+      let newname = 'baz.jpg';
+      let token = 'jwt';
+      let response = api.rename(path, newname, token);
+      let headers = {headers: authHeader};
+      expect(http.put).toHaveBeenCalledWith('https://foo.bar/files/rename', JSON.stringify({path: path, name: newname}), headers);
+    }));
+
+    it('should call http.post and return the raw response', inject([ApiService], (api:ApiService) => {
+      let path = 'foo/bar.jpg';
+      let token = 'jwt';
+      api.delete(path, token)
+        .map((data: Response) => data.text())
+        .subscribe(data => expect(data).toBe('bar'));
+      let headers = {headers: authHeader};
+      expect(http.post).toHaveBeenCalledWith('https://foo.bar/files/delete', JSON.stringify({path: path}), headers);
+    }));
   }); //end 'with custom token'
 
   describe('without custom token', () => {
@@ -92,39 +156,11 @@ describe('ApiService', () => {
       let credentials = {email: 'foo@bar.com', password: 'hunter2'};
       api.login(credentials)
         .map((data: Response) => data.text())
-        .subscribe(data => {
-          expect(data).toBe('bar');
-        });
+        .subscribe(data => expect(data).toBe('bar'));
 
       expect(http.post).toHaveBeenCalledWith('https://foo.bar/auth/login', JSON.stringify(credentials), {headers: jsonHeader});
     }));
 
-  }); //end 'without custom token'
-
-}); //end describe('ApiService')
-
-describe('Simple GET Request', () => {
-  let http:Http;
-  beforeEachProviders(() => {
-    return [
-      HTTP_PROVIDERS, ConnectionBackend,
-      provide(XHRBackend, {useClass: MockBackend}),
-      provide(ApiOptions, {useValue: new ApiOptions({baseUrl: 'https://api.com/'})}),
-      ApiService,
-      Http
-    ]
-  });
-
-  beforeEach(inject([Http], _ => {
-    http = _;
-    spyOn(http, "get").and.returnValue("GET response");
-    spyOn(http, "post").and.returnValue("POST response");
-    spyOn(http, "put").and.returnValue("PUT response");
-  }));
-
-
-
-  describe('ApiService.register()', () => {
     it('should call http.post and return the raw response', inject([ApiService], (api:ApiService) => {
       let credentials = {
         email: 'foo@bar.com',
@@ -132,86 +168,101 @@ describe('Simple GET Request', () => {
         first_name: 'foo',
         last_name: 'bar'
       };
-      let response = api.register(credentials);
-      let headers = {headers: new Headers({'Content-Type': 'application/json'})};
-      expect(http.post).toHaveBeenCalledWith('https://api.com/auth/register', JSON.stringify(credentials), headers);
-      expect(response).toBe('POST response');
-    }))
-  });
+      api.register(credentials)
+        .map((data: Response) => data.text())
+        .subscribe(data => expect(data).toBe('bar'));
 
-  describe('ApiService.edit_user()', () => {
-    it('should call http.put and return the raw response', inject([ApiService], (api:ApiService) => {
-      let userInfo = {
-        id: 0,
-        first_name: 'foo',
-        last_name: 'bar',
-        email: 'foo@bar.com',
-        password: 'hunter2'
-      };
-      let token = 'jwt';
-      let response = api.edit_user(userInfo, token);
-      let headers = {headers: new Headers({
-        'Content-Type': 'application/json',
-        'authorization': 'Bearer ' + token
-      })};
-      expect(http.put).toHaveBeenCalledWith('https://api.com/user/0', JSON.stringify(userInfo), headers);
-      expect(response).toBe('PUT response');
-    }))
-  });
+      let headers = {headers: jsonHeader};
+      expect(http.post).toHaveBeenCalledWith('https://foo.bar/auth/register', JSON.stringify(credentials), headers);
+    }));
 
-  describe('ApiService.jwt_renew()', () => {
-    it('should call http.get and return the raw response', inject([ApiService], (api:ApiService) => {
-      let token = 'jwt';
-      let response = api.jwt_renew(token);
-      let headers = {headers: new Headers({'authorization': 'Bearer jwt'})};
-      expect(http.get).toHaveBeenCalledWith('https://api.com/auth/jwt_renew', headers);
-      expect(response).toBe('GET response');
-    }))
-  });
+    it('files should call http.get and return the raw response', inject([ApiService], (api:ApiService) => {
+      api.files('foo')
+        .map((data: Response) => data.text())
+        .subscribe(data => expect(data).toBe('bar'));
+      let headers = {headers: authHeader};
+      expect(http.get).toHaveBeenCalledWith('https://foo.bar/files/foo', headers);
+    }));
 
-  describe('ApiService.files()', () => {
-    it('should call http.get and return the raw response', inject([ApiService], (api:ApiService) => {
-      let type = 'foo';
-      let token = 'jwt';
-      let response = api.files(type, token);
-      let headers = {headers: new Headers({'authorization': 'Bearer jwt'})};
-      expect(http.get).toHaveBeenCalledWith('https://api.com/files/foo', headers);
-      expect(response).toBe('GET response');
-    }))
-  });
-
-  describe('ApiService.update()', () => {
-    it('should call http.put and return the raw response', inject([ApiService], (api:ApiService) => {
+    it('update should call http.put and return the raw response', inject([ApiService], (api:ApiService) => {
       let path = 'foo/bar.html';
       let content = 'baz';
-      let token = 'jwt';
-      let response = api.update(path, content, token);
-      let headers = {headers: new Headers({'authorization': 'Bearer jwt'})};
-      expect(http.put).toHaveBeenCalledWith('https://api.com/files', JSON.stringify({path: path, content: content}), headers);
-      expect(response).toBe('PUT response');
-    }))
-  });
+      api.update(path, content)
+        .map((data: Response) => data.text())
+        .subscribe(data => expect(data).toBe('bar'));
+      let headers = {headers: authHeader};
+      expect(http.put).toHaveBeenCalledWith('https://foo.bar/files', JSON.stringify({path: path, content: content}), headers);
+    }));
 
-  describe('ApiService.rename()', () => {
-    it('should call http.put and return the raw response', inject([ApiService], (api:ApiService) => {
+    it('rename should call http.put and return the raw response', inject([ApiService], (api:ApiService) => {
       let path = 'foo/bar.jpg';
       let newname = 'baz.jpg';
-      let token = 'jwt';
-      let response = api.rename(path, newname, token);
-      let headers = {headers: new Headers({'authorization': 'Bearer jwt'})};
-      expect(http.put).toHaveBeenCalledWith('https://api.com/files/rename', JSON.stringify({path: path, name: newname}), headers);
-      expect(response).toBe('PUT response');
-    }))
-  });
+      api.rename(path, newname)
+        .map((data: Response) => data.text())
+        .subscribe(data => expect(data).toBe('bar'));
+      let headers = {headers: authHeader};
+      expect(http.put).toHaveBeenCalledWith('https://foo.bar/files/rename', JSON.stringify({path: path, name: newname}), headers);
+    }));
 
-  describe('ApiService.delete()', () => {
-    it('should call http.post and return the raw response', inject([ApiService], (api:ApiService) => {
+    it('delete should call http.post and return the raw response', inject([ApiService], (api:ApiService) => {
       let path = 'foo/bar.jpg';
-      let token = 'jwt';
-      let response = api.delete(path, token);
-      let headers = {headers: new Headers({'authorization': 'Bearer jwt'})};
-      expect(http.post).toHaveBeenCalledWith('https://api.com/files/delete', JSON.stringify({path: path}), headers);
-      expect(response).toBe('POST response');
+      api.delete(path)
+        .map((data: Response) => data.text())
+        .subscribe(data => expect(data).toBe('bar'));
+      let headers = {headers: authHeader};
+      expect(http.post).toHaveBeenCalledWith('https://foo.bar/files/delete', JSON.stringify({path: path}), headers);
     }))
+  }); //end 'without custom token'
+});
+
+describe('ApiService with timeout', () => {
+  let http: Http;
+  let api: ApiService;
+  let response = new Response(new ResponseOptions({body: 'bar'}));
+
+  beforeEachProviders(() => [
+    Http,
+    HTTP_PROVIDERS,
+    provide(ApiOptions, {useValue: new ApiOptions({
+      baseUrl: 'https://foo.bar/',
+      jwtName: 'testJwt',
+      timeout: '10' //10ms
+    })}),
+    ApiService
+  ]);
+
+  let fakeHttp = () => {
+    return new Observable(observer => {
+      setTimeout(() => {
+        observer.next(response);
+        observer.complete();
+      }, 100); //100ms
+    });
+  }
+
+  beforeEach(inject([Http, ApiService], (_http: Http, _api: ApiService) => {
+    http = _http;
+    api = _api;
+    spyOn(http, "get").and.callFake(fakeHttp);
+    spyOn(http, "post").and.callFake(fakeHttp);
+    spyOn(http, "put").and.callFake(fakeHttp);
+  }));
+
+  it('get should timeout gracefully', (done) => {
+    let error = new Error('foo');
+    let apiError: any;
+    api.get('https://foo.bar', 'jwt')
+      .timeout(10, error)
+      .subscribe(
+        data => null,
+        err => {
+          apiError = err;
+          expect(apiError).toBe(error);
+          console.log(apiError);
+          console.log(err);
+          done();
+        },
+        () => done()
+      );
   });
 });

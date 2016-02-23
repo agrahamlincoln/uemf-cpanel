@@ -7,12 +7,16 @@ import {ApiOptions} from './api.options';
 export class ApiService {
   private options = {
     baseUrl: '/',
-    jwtName: 'cpanelJwt'
+    jwtName: 'cpanelJwt',
+    timeout: 5000 //5 second default timeout
   };
   constructor(public http: Http,
               @Optional() @Inject(ApiOptions) options) {
     if (options) {
       Object.assign(this.options, options);
+    }
+    if (this.options.timeout <= 0) {
+      this.options.timeout = 0;
     }
   }
 
@@ -21,16 +25,26 @@ export class ApiService {
     let headers = new Headers({
       'authorization': 'Bearer ' + jwt
     });
-    return this.http.get(url, {headers: headers});
+
+    let res = this.http.get(url, {headers});
+    if (this.options.timeout) {
+      res.timeout(this.options.timeout, new Error('Request timed out'));
+    }
+    return res;
   }
 
   login(credentials: { email: string, password: string }) {
     let headers = new Headers({
       'Content-Type': 'application/json'
     });
-    return this.http.post(this.options.baseUrl + 'auth/login', JSON.stringify(credentials), {
+
+    let res = this.http.post(this.options.baseUrl + 'auth/login', JSON.stringify(credentials), {
       headers: headers
     });
+    if(this.options.timeout) {
+      res.timeout(this.options.timeout, new Error('Login request timed out'));
+    }
+    return res;
   }
 
   register(
