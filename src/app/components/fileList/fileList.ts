@@ -31,15 +31,14 @@ export class FileListComponent {
   }
 
   loadFiles() {
-    var fileList = this;
-    fileList.loading = true;
-    fileList.filter = fileList.params.get('type');
-    var list = fileList._api.files(fileList.filter);
+    this.loading = true;
+    this.filter = this.params.get('type');
+    let list = this._api.files(this.filter);
     list
       .map(res => res.json())
       .subscribe(
         data => {
-          for (var file in data) {
+          for (let file in data) {
             //Parse the date from UTC Seconds string to Date Object
             data[file].modified_date = Date.parse(data[file].modified_date);
 
@@ -47,22 +46,21 @@ export class FileListComponent {
             data[file].active = false;  //Selects the file
             data[file].editing = false; //Opens editing view of the file
           }
-          fileList.files = data;
+          this.files = data;
         },
         err => {
           console.error(err);
         },
         () => {
           console.log('API Call Complete: Files');
-          fileList.loading = false;
+          this.loading = false;
         }
       );
   }
 
   selectFile(file: File) {
-    var fileList = this;
     if (!file.active) {
-      fileList.files.forEach((file) => {
+      this.files.forEach((file) => {
         //Reset the state of each file component
         file.editing = false;
         file.active = false;
