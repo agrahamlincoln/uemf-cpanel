@@ -5,7 +5,7 @@ import { Component, Input } from 'angular2/core';
 import { ApiService } from '../../services/api/api';
 import { AuthService } from '../../services/auth/auth';
 import { Spinner } from '../spinner/spinner';
-declare var tinymce: any;
+declare let tinymce: any;
 
 @Component({
   selector: 'wysiwyg',
