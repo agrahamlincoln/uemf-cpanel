@@ -6,7 +6,7 @@ import {ApiOptions} from './api.options';
 @Injectable()
 export class ApiService {
   private options = {
-    baseUrl: '/',
+    apiUrl: location.origin || location.protocol + "//" + location.host,
     jwtName: 'cpanelJwt',
     timeout: 5000 //5 second default timeout
   };
@@ -33,12 +33,25 @@ export class ApiService {
     return res;
   }
 
+  getPage(pageName: string) {
+    let pathArray = this.options.apiUrl.split( '/' );
+    let protocol = pathArray[0];
+    let host = pathArray[2];
+    let url = protocol + '//' + host;
+
+    let res = this.http.get(url + '/content/pages/' + pageName);
+    if (this.options.timeout) {
+      res.timeout(this.options.timeout, new Error('Request timed out'));
+    }
+    return res;
+  }
+
   login(credentials: { email: string, password: string }) {
     let headers = new Headers({
       'Content-Type': 'application/json'
     });
 
-    let res = this.http.post(this.options.baseUrl + 'auth/login', JSON.stringify(credentials), {
+    let res = this.http.post(this.options.apiUrl + 'auth/login', JSON.stringify(credentials), {
       headers: headers
     });
     if(this.options.timeout) {
@@ -58,7 +71,7 @@ export class ApiService {
     let headers = new Headers({
       'Content-Type': 'application/json'
     });
-    return this.http.post(this.options.baseUrl + 'auth/register', JSON.stringify(credentials), {
+    return this.http.post(this.options.apiUrl + 'auth/register', JSON.stringify(credentials), {
       headers: headers
     });
   }
@@ -78,7 +91,7 @@ export class ApiService {
       'Content-Type': 'application/json',
       'authorization': 'Bearer ' + jwt
     });
-    return this.http.put(this.options.baseUrl + 'user/' + userInfo.id, JSON.stringify(userInfo), {
+    return this.http.put(this.options.apiUrl + 'user/' + userInfo.id, JSON.stringify(userInfo), {
       headers: headers
     });
   }
@@ -87,15 +100,16 @@ export class ApiService {
     let headers = new Headers({
       'authorization': 'Bearer ' + token
     });
-    return this.http.get(this.options.baseUrl + 'auth/jwt_renew', {headers: headers});
+    return this.http.get(this.options.apiUrl + 'auth/jwt_renew', {headers: headers});
   }
 
   files(type: string, token?: string) {
+    console.log(this.options.jwtName);
     let jwt = token || localStorage.getItem(this.options.jwtName);
     let headers = new Headers({
       'authorization': 'Bearer ' + jwt
     });
-    return this.http.get(this.options.baseUrl + 'files/' + type, {headers: headers});
+    return this.http.get(this.options.apiUrl + 'files/' + type, {headers: headers});
   }
 
   update(path: string, content: string, token?: string) {
@@ -107,7 +121,7 @@ export class ApiService {
       'path': path,
       'content': content
     };
-    return this.http.put(this.options.baseUrl + 'files', JSON.stringify(data), {headers: headers});
+    return this.http.put(this.options.apiUrl + 'files', JSON.stringify(data), {headers: headers});
   }
 
   rename(path: string, newname: string, token?: string) {
@@ -119,7 +133,7 @@ export class ApiService {
       'path': path,
       'name': newname
     };
-    return this.http.put(this.options.baseUrl + 'files/rename', JSON.stringify(data), {headers: headers});
+    return this.http.put(this.options.apiUrl + 'files/rename', JSON.stringify(data), {headers: headers});
   }
 
   delete(path: string, token?: string) {
@@ -128,7 +142,7 @@ export class ApiService {
       'authorization': 'Bearer ' + jwt
     });
     let data = { 'path': path };
-    return this.http.post(this.options.baseUrl + 'files/delete', JSON.stringify(data), {headers: headers});
+    return this.http.post(this.options.apiUrl + 'files/delete', JSON.stringify(data), {headers: headers});
   }
 
 }

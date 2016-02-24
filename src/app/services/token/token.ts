@@ -1,5 +1,6 @@
-import {Injectable} from 'angular2/core';
+import {Inject, Injectable, Optional} from 'angular2/core';
 import {Observable} from 'rxjs/Observable';
+import {ApiOptions} from '../api/api.options';
 import 'rxjs/add/operator/share';
 
 // Avoid TS error "cannot find name escape"
@@ -11,8 +12,17 @@ export class TokenService {
   private _jwtObserver: any;
   private _jwt = '';
 
-  constructor () {
+  private options = {
+    jwtName: 'cpanelJwt'
+  };
+
+  constructor (@Optional() @Inject(ApiOptions) options) {
     var tokenStorage = this;
+    if (options) {
+      if (options.jwtName) {
+        this.options.jwtName = options.jwtName;
+      }
+    }
 
     //Initialize observable
     tokenStorage.tokenStream$ = new Observable(observer => {
@@ -50,7 +60,7 @@ export class TokenService {
   }
 
   public getSaved() {
-    return localStorage.getItem('cpanelJwt');
+    return localStorage.getItem(this.options.jwtName);
   }
 
   public save(jwt: string) {
@@ -108,7 +118,7 @@ export class TokenService {
   }
 
   private _store() {
-    localStorage.setItem('cpanelJwt', this._jwt);
+    localStorage.setItem(this.options.jwtName, this._jwt);
   }
 
   private _urlBase64Decode(str: string) {
@@ -156,7 +166,7 @@ export function isTokenExpired(storageTokenName?: string, jwt?: string) {
     token = localStorage.getItem(tokenName);
   }
 
-  var tokenStorage = new TokenService();
+  var tokenStorage = new TokenService({});
   if (!token || tokenStorage.isTokenExpired(token)) {
     return false;
   } else {

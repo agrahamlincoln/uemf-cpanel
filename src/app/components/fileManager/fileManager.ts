@@ -24,7 +24,7 @@ import {isTokenExpired} from '../../services/token/token';
 })
 
 //Protected route, user must be logged in
-@CanActivate(() => isTokenExpired())
+@CanActivate(() => isTokenExpired('uemf-org-jwt'))
 
 export class FileManager {
 
