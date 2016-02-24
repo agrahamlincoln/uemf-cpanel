@@ -5,6 +5,7 @@
   <button class="ucp-btn" [class.active]="filter === 'all'" [routerLink]="['FileManager', {type: 'all'}]">All</button>
 </div>
 <spinner *ngIf="loading"></spinner>
+<div *ngIf="error" class="error">{{error}}</div>
 <file
   class="ucp-file ucp-fadein"
   *ngFor="#file of files"

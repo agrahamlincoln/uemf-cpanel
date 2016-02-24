@@ -19,6 +19,7 @@ export class FileListComponent {
   public files: Array<File>;
   public loading: boolean;
   public filter: string;
+  public error: string;
 
   constructor(
     private _api: ApiService,
@@ -49,7 +50,13 @@ export class FileListComponent {
           this.files = data;
         },
         err => {
-          console.error(err);
+          try {
+            let error = err.json();
+            this.error = error.message;
+          } catch (SyntaxError) {
+            this.error = "An error ocurred while loading the list of files.";
+          }
+          this.loading = false;
         },
         () => {
           console.log('API Call Complete: Files');
