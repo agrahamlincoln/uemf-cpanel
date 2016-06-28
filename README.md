@@ -6,6 +6,9 @@ This project serves as the control panel for the [uemf.org](https://uemf.org) we
 * Edit existing pages with a wysiwyg editor
 * Manage your user account for the control panel and API
 
+## Note
+This repository is not complete and is a work in progress. If you find any bugs or problems, feel free to report them.
+
 ### Installing
 > clone the project and install dependency packages with npm
 
